@@ -59,10 +59,7 @@ public class MessagingFragment extends Fragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         mContext = activity;
-<<<<<<< HEAD
         Log.d(TAG, "I AM AN ATTACHED BANANA");
-=======
->>>>>>> 37a1fcac5cae70f6f1c212ad384c08ffd9a536a8
         try {
             mListener = (Messaging.MessagingListener) activity;
         } catch (ClassCastException e) {
