@@ -27,19 +27,19 @@
         </receiver>
 
         <service
-            android:name="gcm.InstanceIDListener"
+            android:name="pub.devrel.easygoogle.gcm.InstanceIDListener"
             android:exported="false" >
             <intent-filter>
                 <action android:name="com.google.android.gms.iid.InstanceID" />
             </intent-filter>
         </service>
         <service
-            android:name=".RegistrationService"
+            android:name="pub.devrel.easygoogle.gcm.RegistrationService"
             android:exported="true"
             android:permission="com.google.android.c2dm.permission.SEND" >
         </service>
         <service
-            android:name=".MessageListener"
+            android:name="pub.devrel.easygoogle.gcm.MessageListener"
             android:enabled="true"
             android:exported="true" >
             <intent-filter>
@@ -47,7 +47,7 @@
             </intent-filter>
         </service>
         <service
-            android:name=".MessageSender"
+            android:name="pub.devrel.easygoogle.gcm.MessageSender"
             android:exported="false" >
         </service>
     </application>

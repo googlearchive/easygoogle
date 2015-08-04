@@ -60,12 +60,11 @@ public class MessagingFragment extends BaseFragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         mContext = activity;
-        Log.d(TAG, "I AM ATTACJED");
         try {
             mListener = (MessagingListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
-                    + " must implement OnFragmentInteractionListener");
+                    + " must implement MessagingListener");
         }
     }
 
