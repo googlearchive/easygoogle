@@ -6,13 +6,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
-import pub.devrel.easygoogle.BaseFragment;
 
-
-public class MessagingFragment extends BaseFragment {
+public class MessagingFragment extends Fragment {
     public static final String SENDER_ID_ARG = "SENDER_ID";
     public static final String SENT_TOKEN_TO_SERVER = "SENT_TOKEN_TO_SERVER";
     public static final String REGISTRATION_COMPLETE = "REGISTRATION COMPLETE";
@@ -22,22 +21,22 @@ public class MessagingFragment extends BaseFragment {
     public static final String MESSAGE_ARG = "MESSAGE_ARG";
 
     private String mSenderId;
-    private MessagingListener mListener;
+    private Messaging.MessagingListener mListener;
     private Activity mContext;
     private BroadcastReceiver mReceiver;
 
 
-    public static MessagingFragment newInstance(Activity activity, String senderId) {
+    public static MessagingFragment newInstance(String senderId) {
         MessagingFragment fragment = new MessagingFragment();
         Bundle args = new Bundle();
         args.putString(SENDER_ID_ARG, senderId);
         fragment.setArguments(args);
-        bind(activity, fragment, TAG);
         return fragment;
     }
 
+    // Required empty public constructor
     public MessagingFragment() {
-        // Required empty public constructor
+        super();
     }
 
     @Override
@@ -60,9 +59,9 @@ public class MessagingFragment extends BaseFragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         mContext = activity;
-        Log.d(TAG, "I AM ATTACJED");
+        Log.d(TAG, "I AM AN ATTACHED BANANA");
         try {
-            mListener = (MessagingListener) activity;
+            mListener = (Messaging.MessagingListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
                     + " must implement OnFragmentInteractionListener");
@@ -73,10 +72,6 @@ public class MessagingFragment extends BaseFragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
-    }
-
-    public interface MessagingListener {
-        public void onMessageReceived(String from, Bundle message);
     }
 
     public void register(String senderId) {

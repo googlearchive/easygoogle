@@ -34,12 +34,12 @@
             </intent-filter>
         </service>
         <service
-            android:name=".RegistrationService"
+            android:name="gcm.RegistrationService"
             android:exported="true"
             android:permission="com.google.android.c2dm.permission.SEND" >
         </service>
         <service
-            android:name=".MessageListener"
+            android:name="gcm.MessageListener"
             android:enabled="true"
             android:exported="true" >
             <intent-filter>
@@ -47,7 +47,7 @@
             </intent-filter>
         </service>
         <service
-            android:name=".MessageSender"
+            android:name="gcm.MessageSender"
             android:exported="false" >
         </service>
     </application>
