@@ -2,7 +2,9 @@ package pub.devrel.easygoogle.sample;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.google.android.gms.plus.model.people.Person;
 
@@ -16,6 +18,7 @@ public class MainActivity extends AppCompatActivity implements
         Messaging.MessagingListener {
 
     private Google mGoogle;
+    public static String TAG = "sample.MainActivity";
 
     // TODO(afshar): I could not resolve R.string.gcm_defaultSenderId, this is a placeholder
     private static final String SENDER_ID = "gcm_defaultSenderId";
@@ -66,6 +69,16 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onMessageReceived(String from, Bundle message) {
-        // TODO: Implement
+        logAndToast("Message received", message);
+    }
+
+    private void logAndToast(String message) {
+        logAndToast(message, "");
+    }
+
+    private void logAndToast(String message, Object value) {
+        String text = message + "//" + value;
+        Log.d(TAG, text);
+        Toast.makeText(getApplicationContext(), text, Toast.LENGTH_LONG).show();
     }
 }

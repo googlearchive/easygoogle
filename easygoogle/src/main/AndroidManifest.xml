@@ -27,7 +27,7 @@
         </receiver>
 
         <service
-            android:name="gcm.InstanceIDListener"
+            android:name="pub.devrel.easygoogle.gcm.InstanceIDListener"
             android:exported="false" >
             <intent-filter>
                 <action android:name="com.google.android.gms.iid.InstanceID" />

@@ -17,11 +17,6 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
-    }    // for firebase
-    packagingOptions {
-        exclude 'META-INF/LICENSE'
-        exclude 'META-INF/LICENSE-FIREBASE.txt'
-        exclude 'META-INF/NOTICE'
     }
 
 }
@@ -29,6 +24,5 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:22.2.0'
-    compile 'com.firebase:firebase-client-android:2.2.4+'
     compile 'com.google.android.gms:play-services:7.5.0'
 }
