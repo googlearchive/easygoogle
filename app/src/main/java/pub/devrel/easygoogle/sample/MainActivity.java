@@ -1,24 +1,28 @@
 package pub.devrel.easygoogle.sample;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import com.google.android.gms.plus.model.people.Person;
 
 import pub.devrel.easygoogle.Google;
-import pub.devrel.easygoogle.R;
 import pub.devrel.easygoogle.gac.SignIn;
 import pub.devrel.easygoogle.gcm.Messaging;
 
+/**
+ * Simple activity with GCM and Sign-In.
+ */
 public class MainActivity extends AppCompatActivity implements
         SignIn.SignInListener,
-        Messaging.MessagingListener {
+        Messaging.MessagingListener,
+        View.OnClickListener {
 
-    private Google mGoogle;
     public static String TAG = "sample.MainActivity";
+    private Google mGoogle;
 
     // TODO(afshar): I could not resolve R.string.gcm_defaultSenderId, this is a placeholder
     private static final String SENDER_ID = "gcm_defaultSenderId";
@@ -33,52 +37,57 @@ public class MainActivity extends AppCompatActivity implements
                 .setSignInListener(this)
                 .build();
 
-        // Send GCM Message
-        findViewById(R.id.send_message_button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Bundle b = new Bundle();
-                b.putString("message", "I am a banana!");
-                Messaging.send(mGoogle, b);
-            }
-        });
+        findViewById(R.id.send_message_button).setOnClickListener(this);
+        findViewById(R.id.sign_in_button).setOnClickListener(this);
+        findViewById(R.id.sign_out_button).setOnClickListener(this);
+    }
 
-        // Sign in
-        findViewById(R.id.sign_in_button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                SignIn.signIn(mGoogle);
-            }
-        });
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (!mGoogle.handleActivityResult(requestCode, resultCode, data)) {
+            // Do your own handling here..
+        }
     }
 
     @Override
     public void onSignedIn(Person person) {
-        // TODO: Implement
+        ((TextView) findViewById(R.id.sign_in_status)).setText("Signed in as: " + person.getDisplayName());
     }
 
     @Override
     public void onSignedOut() {
-        // TODO: Implement
+        ((TextView) findViewById(R.id.sign_in_status)).setText(R.string.status_signed_out);
     }
 
     @Override
     public void onSignInFailed() {
-        // TODO: Implement
+        ((TextView) findViewById(R.id.sign_in_status)).setText("Sign in failed.");
     }
 
     @Override
     public void onMessageReceived(String from, Bundle message) {
-        logAndToast("Message received", message);
+        Log.d(TAG, "onMessageReceived:" + from + ":" + message);
+        ((TextView) findViewById(R.id.messaging_status)).setText("Message from " + from);
     }
 
-    private void logAndToast(String message) {
-        logAndToast(message, "");
-    }
-
-    private void logAndToast(String message, Object value) {
-        String text = message + "//" + value;
-        Log.d(TAG, text);
-        Toast.makeText(getApplicationContext(), text, Toast.LENGTH_LONG).show();
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.sign_in_button:
+                // Sign in with Google
+                SignIn.signIn(mGoogle);
+                break;
+            case R.id.sign_out_button:
+                // Sign out with Google
+                SignIn.signOut(mGoogle);
+                break;
+            case R.id.send_message_button:
+                // Send a GCM message
+                Bundle b = new Bundle();
+                b.putString("message", "I am a banana!");
+                Messaging.send(mGoogle, b);
+                break;
+        }
     }
 }

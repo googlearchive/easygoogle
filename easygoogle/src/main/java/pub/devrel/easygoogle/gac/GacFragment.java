@@ -146,10 +146,13 @@ public class GacFragment extends Fragment implements
                 }
             } else {
                 // TODO(samstern): No resolution, show error dialog
+                Log.e(TAG, "Error: no resolution:" + connectionResult.getErrorCode());
             }
         } else {
             // TODO(samstern): What to do here?
             // TODO(samstern): should I notify GacServices on unresolvable failure?
+            Log.w(TAG, String.format("Not resolving (isResolving, shouldResolve) = (%b, %b)",
+                    mIsResolving, mShouldResolve));
         }
     }
 
@@ -158,10 +161,12 @@ public class GacFragment extends Fragment implements
     }
 
     public void setShouldResolve(boolean shouldResolve) {
+        Log.d(TAG, "setShouldResolve:" + shouldResolve);
         mShouldResolve = shouldResolve;
     }
 
     public void setIsResolving(boolean isResolving) {
+        Log.d(TAG, "setIsResolving:" + isResolving);
         mIsResolving = isResolving;
     }
 
