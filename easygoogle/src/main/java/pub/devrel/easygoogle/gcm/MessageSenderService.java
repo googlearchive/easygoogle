@@ -17,14 +17,14 @@ import java.util.concurrent.atomic.AtomicInteger;
  * <p/>
  * TODO: Customize class - update intent actions and extra parameters.
  */
-public class MessageSender extends IntentService {
+public class MessageSenderService extends IntentService {
 
-    public static final String TAG = "gf.MessageSender";
+    public static final String TAG = "gf.MessageSenderService";
 
     private static AtomicInteger sMessageId = new AtomicInteger();
 
-    public MessageSender() {
-        super("MessageSender");
+    public MessageSenderService() {
+        super("MessageSenderService");
     }
 
     @Override

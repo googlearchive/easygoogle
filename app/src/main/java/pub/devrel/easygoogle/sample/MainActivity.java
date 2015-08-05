@@ -24,8 +24,6 @@ public class MainActivity extends AppCompatActivity implements
     public static String TAG = "sample.MainActivity";
     private Google mGoogle;
 
-    // TODO(afshar): I could not resolve R.string.gcm_defaultSenderId, this is a placeholder
-    private static final String SENDER_ID = "gcm_defaultSenderId";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,7 +31,7 @@ public class MainActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_main);
 
         mGoogle = new Google.Builder(this)
-                .enableMessaging(SENDER_ID)
+                .enableMessaging(getString(R.string.gcm_defaultSenderId))
                 .setSignInListener(this)
                 .build();
 

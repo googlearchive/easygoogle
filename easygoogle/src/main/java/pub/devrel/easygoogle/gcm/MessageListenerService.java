@@ -7,11 +7,11 @@ import android.util.Log;
 
 import com.google.android.gms.gcm.GcmListenerService;
 
-public class MessageListener extends GcmListenerService {
-    public MessageListener() {
+public class MessageListenerService extends GcmListenerService {
+    public MessageListenerService() {
     }
 
-    public static final String TAG = "gf.GcmListenerService";
+    public static final String TAG = "MessageListenerService";
 
     @Override
     public void onMessageReceived(String from, Bundle data) {

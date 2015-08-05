@@ -76,7 +76,7 @@ public class MessagingFragment extends Fragment {
 
     public void register(String senderId) {
         Log.d(TAG, "register");
-        Intent intent = new Intent(getActivity(), RegistrationService.class);
+        Intent intent = new Intent(getActivity(), IDRegisterService.class);
         intent.putExtra(SENDER_ID_ARG, mSenderId);
         mContext.startService(intent);
     }
@@ -99,7 +99,7 @@ public class MessagingFragment extends Fragment {
     }
 
     public void send(Bundle data) {
-        Intent intent = new Intent(mContext, MessageSender.class);
+        Intent intent = new Intent(mContext, MessageSenderService.class);
         intent.putExtra(SENDER_ID_ARG, mSenderId);
         intent.putExtra(MESSAGE_ARG, data);
         getActivity().startService(intent);

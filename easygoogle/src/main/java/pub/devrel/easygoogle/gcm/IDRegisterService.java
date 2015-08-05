@@ -11,11 +11,11 @@ import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
 
 
-public class RegistrationService extends IntentService {
+public class IDRegisterService extends IntentService {
 
-    public static String TAG = "gf.RegistrationService";
+    public static String TAG = "IDRegisterService";
 
-    public RegistrationService() {
+    public IDRegisterService() {
         super(TAG);
     }
 
