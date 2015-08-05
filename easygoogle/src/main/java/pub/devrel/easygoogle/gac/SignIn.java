@@ -1,3 +1,18 @@
+/*
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package pub.devrel.easygoogle.gac;
 
 import android.app.Activity;
@@ -18,21 +33,18 @@ import com.google.android.gms.plus.model.people.Person;
 import java.util.Arrays;
 import java.util.List;
 
-import pub.devrel.easygoogle.Google;
-
-public class SignIn extends GacBase {
+public class SignIn extends GacModule {
 
     public interface SignInListener {
         void onSignedIn(Person person);
         void onSignedOut();
-
-        // TODO(samstern): when should I call this?
         void onSignInFailed();
     }
 
     private static final String TAG = SignIn.class.getSimpleName();
-
     public static final int RC_SIGN_IN = 9001;
+
+    private SignIn.SignInListener mSignInListener;
 
     public SignIn(GacFragment fragment) {
         super(fragment);
@@ -45,14 +57,18 @@ public class SignIn extends GacBase {
 
     @Override
     public List<Scope> getScopes() {
-        // TODO(samstern): remove login scope
-        return Arrays.asList(new Scope("profile"), new Scope("email"), Plus.SCOPE_PLUS_LOGIN);
+        return Arrays.asList(new Scope("profile"), new Scope("email"));
     }
 
     @Override
     public void onConnected() {
         Person currentPerson = Plus.PeopleApi.getCurrentPerson(getFragment().getGoogleApiClient());
-        getFragment().getSignInListener().onSignedIn(currentPerson);
+        mSignInListener.onSignedIn(currentPerson);
+    }
+
+    @Override
+    public void onUnresolvableFailure() {
+        mSignInListener.onSignInFailed();
     }
 
     @Override
@@ -112,7 +128,7 @@ public class SignIn extends GacBase {
                     @Override
                     public void onResult(Status status) {
                         if (status.isSuccess()) {
-                            fragment.getSignInListener().onSignedOut();
+                            mSignInListener.onSignedOut();
                         } else {
                             Log.w(TAG, "Could not sign out: " + status);
                         }
@@ -121,6 +137,6 @@ public class SignIn extends GacBase {
     }
 
     public void setListener(SignInListener listener) {
-        getFragment().setSignInListener(listener);
+        mSignInListener = listener;
     }
 }

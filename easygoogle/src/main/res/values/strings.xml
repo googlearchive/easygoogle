@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">easygoogle</string>
+    <string name="play_services_error_fmt">Google Play Services Error: %i</string>
 </resources>

@@ -1,18 +1,38 @@
+/*
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package pub.devrel.easygoogle.gac;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.Api;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Scope;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import pub.devrel.easygoogle.R;
 
 public class GacFragment extends Fragment implements
         GoogleApiClient.ConnectionCallbacks,
@@ -23,20 +43,18 @@ public class GacFragment extends Fragment implements
     private static final String KEY_IS_RESOLVING = "is_resolving";
     private static final String KEY_SHOULD_RESOLVE = "should_resolve";
 
-    private SignIn.SignInListener mSignInListener;
-
     private GoogleApiClient mGoogleApiClient;
-    private Map<Class<? extends GacBase>, GacBase> mServices = new HashMap<>();
+    private Map<Class<? extends GacModule>, GacModule> mModules = new HashMap<>();
 
     private boolean mIsResolving = false;
     private boolean mShouldResolve = false;
     private int mResolutionCode;
 
     private void buildGoogleApiClient() {
-        Log.d(TAG, "buildGoogleApiClient: " + mServices);
+        Log.d(TAG, "buildGoogleApiClient: " + mModules);
 
         // Can't build a GoogleApiClient with no APIs
-        if (mServices.size() == 0) {
+        if (mModules.size() == 0) {
             Log.w(TAG, "No APIs, not building GoogleApiClient.");
             return;
         }
@@ -45,7 +63,7 @@ public class GacFragment extends Fragment implements
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this);
 
-        for (GacBase api : mServices.values()) {
+        for (GacModule api : mModules.values()) {
             for (Api apiObj : api.getApis()) {
                 builder.addApi(apiObj);
             }
@@ -65,16 +83,11 @@ public class GacFragment extends Fragment implements
 
         // Give each API a chance to handle it
         boolean handled = false;
-        for (GacBase s : mServices.values()) {
-
-            if (s.handleActivityResult(requestCode, resultCode, data)) {
+        for (GacModule module : mModules.values()) {
+            if (module.handleActivityResult(requestCode, resultCode, data)) {
                 handled = true;
                 break;
             }
-        }
-
-        if (!handled) {
-            // TODO(samstern): handling for general GAC errors (install GMS, etc)
         }
     }
 
@@ -125,8 +138,8 @@ public class GacFragment extends Fragment implements
     public void onConnected(Bundle bundle) {
         Log.d(TAG, "onConnected: " + bundle);
 
-        for (GacBase gacService : mServices.values()) {
-            gacService.onConnected();
+        for (GacModule module : mModules.values()) {
+            module.onConnected();
         }
     }
 
@@ -139,8 +152,8 @@ public class GacFragment extends Fragment implements
     public void onConnectionFailed(ConnectionResult connectionResult) {
         Log.d(TAG, "onConnectionFailed: " + connectionResult);
 
-        // TODO(samstern): reset resolution code at some point
         if (!mIsResolving && mShouldResolve) {
+            Log.d(TAG, "onConnectionFailed: resolving with code " + mResolutionCode);
             if (connectionResult.hasResolution()) {
                 try {
                     connectionResult.startResolutionForResult(getActivity(), maskRequestCode(mResolutionCode));
@@ -151,14 +164,37 @@ public class GacFragment extends Fragment implements
                     mGoogleApiClient.connect();
                 }
             } else {
-                // TODO(samstern): No resolution, show error dialog
                 Log.e(TAG, "Error: no resolution:" + connectionResult.getErrorCode());
+                showErrorDialog(connectionResult);
+
+                for (GacModule module : mModules.values()) {
+                    module.onUnresolvableFailure();
+                }
             }
         } else {
-            // TODO(samstern): What to do here?
-            // TODO(samstern): should I notify GacServices on unresolvable failure?
             Log.w(TAG, String.format("Not resolving (isResolving, shouldResolve) = (%b, %b)",
                     mIsResolving, mShouldResolve));
+        }
+    }
+
+    private void showErrorDialog(ConnectionResult connectionResult) {
+        int errorCode = connectionResult.getErrorCode();
+
+        if (GooglePlayServicesUtil.isUserRecoverableError(errorCode)) {
+            // Show the default Google Play services error dialog which may still start an intent
+            // on our behalf if the user can resolve the issue.
+            GooglePlayServicesUtil.getErrorDialog(errorCode, getActivity(), mResolutionCode,
+                    new DialogInterface.OnCancelListener() {
+                        @Override
+                        public void onCancel(DialogInterface dialog) {
+                            mShouldResolve = false;
+                        }
+                    }).show();
+        } else {
+            // No default Google Play Services error, display a message to the user.
+            String errorString = getString(R.string.play_services_error_fmt, errorCode);
+            Toast.makeText(getActivity(), errorString, Toast.LENGTH_SHORT).show();
+            mShouldResolve = false;
         }
     }
 
@@ -205,20 +241,15 @@ public class GacFragment extends Fragment implements
         return mGoogleApiClient;
     }
 
-    public SignIn.SignInListener getSignInListener() {
-        return mSignInListener;
+    public <T> T getModule(Class<T> clazz) {
+        return (T) mModules.get(clazz);
     }
 
-    public void setSignInListener(SignIn.SignInListener signInListener) {
-        mSignInListener = signInListener;
-
-        // Enable/disable SignIn
-        if (mSignInListener != null && !mServices.containsKey(SignIn.class)) {
-            // Sign-in service needs to be enabled
-            mServices.put(SignIn.class, new SignIn(this));
-        } else if (mSignInListener == null && mServices.containsKey(SignIn.class)) {
-            // Sign-in service needs to be disabled
-            mServices.remove(SignIn.class);
-        }
+    // TODO(samstern): I can probably generalize this to "enableModule" if GacModule is genericized
+    // with the type of the listener for the module.
+    public void enableSignIn(SignIn.SignInListener signInListener) {
+        SignIn signIn = new SignIn(this);
+        signIn.setListener(signInListener);
+        mModules.put(SignIn.class, signIn);
     }
 }

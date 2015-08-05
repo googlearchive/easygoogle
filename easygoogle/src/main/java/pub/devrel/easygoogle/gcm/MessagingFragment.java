@@ -1,3 +1,18 @@
+/*
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package pub.devrel.easygoogle.gcm;
 
 import android.app.Activity;
@@ -21,6 +36,7 @@ public class MessagingFragment extends Fragment {
     public static final String MESSAGE_ARG = "MESSAGE_ARG";
 
     private String mSenderId;
+    private Messaging mMessaging;
     private Messaging.MessagingListener mListener;
     private Activity mContext;
     private BroadcastReceiver mReceiver;
@@ -38,7 +54,15 @@ public class MessagingFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mSenderId = getArguments().getString(SENDER_ID_ARG);
+
+        if (getArguments() != null) {
+            mSenderId = getArguments().getString(SENDER_ID_ARG);
+        } else {
+            Log.w(TAG, "getArguments() returned null, not setting senderId");
+        }
+
+        mMessaging = new Messaging(this);
+
         createReceiver();
         register();
     }
@@ -117,6 +141,10 @@ public class MessagingFragment extends Fragment {
 
     public static String getSenderEmail(String senderId) {
         return senderId + "@gcm.googleapis.com";
+    }
+
+    public Messaging getMessaging() {
+        return mMessaging;
     }
 
 }

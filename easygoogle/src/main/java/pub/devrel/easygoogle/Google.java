@@ -1,9 +1,22 @@
+/*
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package pub.devrel.easygoogle;
 
-import android.content.Intent;
 import android.support.v4.app.FragmentActivity;
-
-import com.google.android.gms.common.api.GoogleApiClient;
+import android.util.Log;
 
 import pub.devrel.easygoogle.gac.GacFragment;
 import pub.devrel.easygoogle.gac.SignIn;
@@ -26,9 +39,6 @@ public class Google {
     // Fragment that holds the GoogleApiClient
     private GacFragment mGacFragment;
     private MessagingFragment mMessagingFragment;
-
-    private Messaging mMessaging;
-    private SignIn mSignIn;
 
     public static class Builder {
 
@@ -55,11 +65,11 @@ public class Google {
         public Google build() {
             Google google = new Google(mActivity);
             if (mSignInListener != null) {
-                google.getSignIn().setListener(mSignInListener);
+                google.mGacFragment.enableSignIn(mSignInListener);
             }
             if (mSenderId != null) {
-                google.getMessaging().setListener(mMessagingListener);
-                google.getMessaging().setSenderId(mSenderId);
+                google.mMessagingFragment.setSenderId(mSenderId);
+                google.mMessagingFragment.setMessagingListener(mMessagingListener);
             }
             return google;
         }
@@ -69,19 +79,23 @@ public class Google {
         // Create the fragments first, then the shims.
         mGacFragment = FragmentUtils.getOrCreate(activity, TAG_GAC_FRAGMENT, new GacFragment());
         mMessagingFragment =  FragmentUtils.getOrCreate(activity, TAG_MESSAGING_FRAGMENT, MessagingFragment.newInstance());
-        mSignIn = new SignIn(mGacFragment);
-        mMessaging = new Messaging(mMessagingFragment);
-    }
-
-    public boolean handleActivityResult(int requestCode, int resultCode, Intent data) {
-        return mSignIn.handleActivityResult(requestCode, resultCode, data);
     }
 
     public Messaging getMessaging() {
-        return mMessaging;
+        Messaging messaging = mMessagingFragment.getMessaging();
+        if (messaging == null) {
+            Log.w(TAG, "Messaging is not enabled, getMessaging() returning null.");
+        }
+
+        return messaging;
     }
 
     public SignIn getSignIn() {
-        return mSignIn;
+        SignIn signIn = mGacFragment.getModule(SignIn.class);
+        if (signIn == null) {
+            Log.w(TAG, "SignIn is not enabled, getSignIn() returning null.");
+        }
+
+        return signIn;
     }
 }
