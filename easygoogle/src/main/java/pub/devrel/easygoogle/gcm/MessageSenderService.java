@@ -12,14 +12,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 
 /**
- * An {@link IntentService} subclass for handling asynchronous task requests in
- * a service on a separate handler thread.
- * <p/>
- * TODO: Customize class - update intent actions and extra parameters.
+ * An {@link IntentService} for sending GCM upstream messages.
  */
 public class MessageSenderService extends IntentService {
 
-    public static final String TAG = "gf.MessageSenderService";
+    public static final String TAG = "MessageSenderService";
 
     private static AtomicInteger sMessageId = new AtomicInteger();
 
@@ -33,7 +30,7 @@ public class MessageSenderService extends IntentService {
             String senderEmail = MessagingFragment.getSenderEmail(intent.getStringExtra(MessagingFragment.SENDER_ID_ARG));
             Bundle data = intent.getBundleExtra(MessagingFragment.MESSAGE_ARG);
             String id = Integer.toString(sMessageId.incrementAndGet());
-            Log.d(TAG, senderEmail + "//" + data + "//" + id);
+            Log.d(TAG, "Sending gcm message. " + senderEmail + "//" + data + "//" + id);
             GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(this);
             try {
                 gcm.send(senderEmail, id, data);
@@ -42,23 +39,5 @@ public class MessageSenderService extends IntentService {
                 e.printStackTrace();
             }
         }
-    }
-
-    /**
-     * Handle action Foo in the provided background thread with the provided
-     * parameters.
-     */
-    private void handleActionFoo(String param1, String param2) {
-        // TODO: Handle action Foo
-        throw new UnsupportedOperationException("Not yet implemented");
-    }
-
-    /**
-     * Handle action Baz in the provided background thread with the provided
-     * parameters.
-     */
-    private void handleActionBaz(String param1, String param2) {
-        // TODO: Handle action Baz
-        throw new UnsupportedOperationException("Not yet implemented");
     }
 }

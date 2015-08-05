@@ -16,7 +16,7 @@ import java.util.List;
 
 import pub.devrel.easygoogle.Google;
 
-public class SignIn extends GacService {
+public class SignIn extends GacBase {
 
     public interface SignInListener {
         void onSignedIn(Person person);
@@ -47,8 +47,7 @@ public class SignIn extends GacService {
 
     @Override
     public void onConnected() {
-        Person currentPerson = Plus.PeopleApi.getCurrentPerson(
-                getFragment().getGoogleApiClient());
+        Person currentPerson = Plus.PeopleApi.getCurrentPerson(getFragment().getGoogleApiClient());
         getFragment().getSignInListener().onSignedIn(currentPerson);
     }
 
@@ -68,24 +67,20 @@ public class SignIn extends GacService {
         return false;
     }
 
-    public static void signIn(Google google) {
-        Log.d(TAG, "signIn: " + google);
-        GacFragment fragment = google.getGacFragment();
-
-        fragment.setShouldResolve(true);
-        fragment.setResolutionCode(RC_SIGN_IN);
-        fragment.getGoogleApiClient().reconnect();
+    public void signIn() {
+        Log.d(TAG, "signIn:");
+        getFragment().setShouldResolve(true);
+        getFragment().setResolutionCode(RC_SIGN_IN);
+        getFragment().getGoogleApiClient().reconnect();
     }
 
-    public static void signOut(Google google) {
-        Log.d(TAG, "signOut: " + google);
-        final GacFragment fragment = google.getGacFragment();
-
+    public void signOut() {
+        Log.d(TAG, "signOut: ");
+        final GacFragment fragment = getFragment();
         if (!fragment.isConnected()) {
             Log.w(TAG, "Can't sign out, not signed in!");
             return;
         }
-
         Plus.AccountApi.clearDefaultAccount(fragment.getGoogleApiClient());
         Plus.AccountApi.revokeAccessAndDisconnect(fragment.getGoogleApiClient()).setResultCallback(
                 new ResultCallback<Status>() {
@@ -98,5 +93,9 @@ public class SignIn extends GacService {
                         }
                     }
                 });
+    }
+
+    public void setListener(SignInListener listener) {
+        getFragment().setSignInListener(listener);
     }
 }

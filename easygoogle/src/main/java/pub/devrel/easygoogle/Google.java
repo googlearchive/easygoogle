@@ -7,6 +7,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 
 import pub.devrel.easygoogle.gac.GacFragment;
 import pub.devrel.easygoogle.gac.SignIn;
+import pub.devrel.easygoogle.gcm.Messaging;
 import pub.devrel.easygoogle.gcm.MessagingFragment;
 
 /**
@@ -26,10 +27,14 @@ public class Google {
     private GacFragment mGacFragment;
     private MessagingFragment mMessagingFragment;
 
+    private Messaging mMessaging;
+    private SignIn mSignIn;
+
     public static class Builder {
 
         private FragmentActivity mActivity;
         private SignIn.SignInListener mSignInListener;
+        private Messaging.MessagingListener mMessagingListener;
         private String mSenderId;
 
         public Builder(FragmentActivity activity){
@@ -43,44 +48,42 @@ public class Google {
 
         // TODO(samstern): it should not be required that the Activity implement MessagingListener,
         // it should be passed in here
-        public Builder enableMessaging(String senderId) {
+        public Builder enableMessaging(Messaging.MessagingListener listener, String senderId) {
             mSenderId = senderId;
+            mMessagingListener = listener;
             return this;
         }
 
         public Google build() {
-            Google google = new Google(mActivity, mSenderId);
-            google.getGacFragment().setSignInListener(mSignInListener);
-
+            Google google = new Google(mActivity);
+            if (mSignInListener != null) {
+                google.getSignIn().setListener(mSignInListener);
+            }
+            if (mSenderId != null) {
+                google.getMessaging().setListener(mMessagingListener);
+                google.getMessaging().setSenderId(mSenderId);
+            }
             return google;
         }
     }
 
-    private Google(FragmentActivity activity, String senderId) {
-        // TODO(samstern): should I make this conditional?
+    private Google(FragmentActivity activity) {
+        // Create the fragments first, then the shims.
         mGacFragment = FragmentUtils.getOrCreate(activity, TAG_GAC_FRAGMENT, new GacFragment());
-
-        if (senderId != null) {
-            mMessagingFragment = FragmentUtils.getOrCreate(activity, TAG_MESSAGING_FRAGMENT,
-                    MessagingFragment.newInstance(senderId));
-        }
-
+        mMessagingFragment =  FragmentUtils.getOrCreate(activity, TAG_MESSAGING_FRAGMENT, MessagingFragment.newInstance());
+        mSignIn = new SignIn(mGacFragment);
+        mMessaging = new Messaging(mMessagingFragment);
     }
 
     public boolean handleActivityResult(int requestCode, int resultCode, Intent data) {
         return mGacFragment.handleActivityResult(requestCode, resultCode, data);
     }
 
-    // TODO(samstern): hide this or discourage it
-    public GacFragment getGacFragment() {
-        return mGacFragment;
+    public Messaging getMessaging() {
+        return mMessaging;
     }
 
-    public MessagingFragment getMessagingFragment() {
-        return mMessagingFragment;
-    }
-
-    public GoogleApiClient getGoogleApiClient() {
-        return mGacFragment.getGoogleApiClient();
+    public SignIn getSignIn() {
+        return mSignIn;
     }
 }

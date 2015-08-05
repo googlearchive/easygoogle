@@ -26,12 +26,8 @@ public class MessagingFragment extends Fragment {
     private BroadcastReceiver mReceiver;
 
 
-    public static MessagingFragment newInstance(String senderId) {
-        MessagingFragment fragment = new MessagingFragment();
-        Bundle args = new Bundle();
-        args.putString(SENDER_ID_ARG, senderId);
-        fragment.setArguments(args);
-        return fragment;
+    public static MessagingFragment newInstance() {
+        return new MessagingFragment();
     }
 
     // Required empty public constructor
@@ -44,7 +40,7 @@ public class MessagingFragment extends Fragment {
         super.onCreate(savedInstanceState);
         mSenderId = getArguments().getString(SENDER_ID_ARG);
         createReceiver();
-        register(mSenderId);
+        register();
     }
 
     private void createReceiver() {
@@ -74,11 +70,19 @@ public class MessagingFragment extends Fragment {
         mListener = null;
     }
 
-    public void register(String senderId) {
+    public void register() {
         Log.d(TAG, "register");
         Intent intent = new Intent(getActivity(), IDRegisterService.class);
         intent.putExtra(SENDER_ID_ARG, mSenderId);
         mContext.startService(intent);
+    }
+
+    public void setMessagingListener(Messaging.MessagingListener messagingListener) {
+        mListener = messagingListener;
+    }
+
+    public void setSenderId(String senderId) {
+        mSenderId = senderId;
     }
 
     private class MessageBroadcastReceiver extends BroadcastReceiver {

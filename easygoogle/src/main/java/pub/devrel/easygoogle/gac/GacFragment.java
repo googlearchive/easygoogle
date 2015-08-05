@@ -26,7 +26,7 @@ public class GacFragment extends Fragment implements
     private SignIn.SignInListener mSignInListener;
 
     private GoogleApiClient mGoogleApiClient;
-    private Map<Class<? extends GacService>, GacService> mServices = new HashMap<>();
+    private Map<Class<? extends GacBase>, GacBase> mServices = new HashMap<>();
 
     private boolean mIsResolving = false;
     private boolean mShouldResolve = false;
@@ -45,7 +45,7 @@ public class GacFragment extends Fragment implements
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this);
 
-        for (GacService api : mServices.values()) {
+        for (GacBase api : mServices.values()) {
             for (Api apiObj : api.getApis()) {
                 builder.addApi(apiObj);
             }
@@ -62,7 +62,7 @@ public class GacFragment extends Fragment implements
         Log.d(TAG, "handleActivityResult:" + requestCode + resultCode + data);
 
         // Give each API a chance to handle it
-        for (GacService s : mServices.values()) {
+        for (GacBase s : mServices.values()) {
             if (s.handleActivityResult(requestCode, resultCode, data)) {
                 return true;
             }
@@ -119,7 +119,7 @@ public class GacFragment extends Fragment implements
     public void onConnected(Bundle bundle) {
         Log.d(TAG, "onConnected: " + bundle);
 
-        for (GacService gacService : mServices.values()) {
+        for (GacBase gacService : mServices.values()) {
             gacService.onConnected();
         }
     }

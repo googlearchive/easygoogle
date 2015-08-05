@@ -14,15 +14,15 @@ import pub.devrel.easygoogle.Google;
  * reacts to onConnected events.  Implementers should offer static methods that accept an
  * {@link Google} as a parameter to represent very common API methods.
  */
-public abstract class GacService {
+public abstract class GacBase {
 
     private GacFragment mFragment;
 
-    protected GacService(GacFragment fragment) {
+    protected GacBase(GacFragment fragment) {
         mFragment = fragment;
     }
 
-    public GacFragment getFragment() {
+    protected GacFragment getFragment() {
         return mFragment;
     }
 
