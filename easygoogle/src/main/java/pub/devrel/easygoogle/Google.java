@@ -41,13 +41,11 @@ public class Google {
             mActivity = activity;
         }
 
-        public Builder setSignInListener(SignIn.SignInListener signInListener) {
+        public Builder enableSignIn(SignIn.SignInListener signInListener) {
             mSignInListener = signInListener;
             return this;
         }
 
-        // TODO(samstern): it should not be required that the Activity implement MessagingListener,
-        // it should be passed in here
         public Builder enableMessaging(Messaging.MessagingListener listener, String senderId) {
             mSenderId = senderId;
             mMessagingListener = listener;
@@ -76,7 +74,7 @@ public class Google {
     }
 
     public boolean handleActivityResult(int requestCode, int resultCode, Intent data) {
-        return mGacFragment.handleActivityResult(requestCode, resultCode, data);
+        return mSignIn.handleActivityResult(requestCode, resultCode, data);
     }
 
     public Messaging getMessaging() {

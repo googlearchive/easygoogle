@@ -58,18 +58,24 @@ public class GacFragment extends Fragment implements
         mGoogleApiClient = builder.build();
     }
 
-    public boolean handleActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.d(TAG, "handleActivityResult:" + requestCode + resultCode + data);
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.d(TAG, "onActivityResult:" + requestCode + ":" + resultCode + ":" + data);
 
         // Give each API a chance to handle it
+        boolean handled = false;
         for (GacBase s : mServices.values()) {
+
             if (s.handleActivityResult(requestCode, resultCode, data)) {
-                return true;
+                handled = true;
+                break;
             }
         }
 
-        // TODO(samstern): handling for general GAC errors (install GMS, etc)
-        return false;
+        if (!handled) {
+            // TODO(samstern): handling for general GAC errors (install GMS, etc)
+        }
     }
 
     @Override
@@ -137,7 +143,7 @@ public class GacFragment extends Fragment implements
         if (!mIsResolving && mShouldResolve) {
             if (connectionResult.hasResolution()) {
                 try {
-                    connectionResult.startResolutionForResult(getActivity(), mResolutionCode);
+                    connectionResult.startResolutionForResult(getActivity(), maskRequestCode(mResolutionCode));
                     mIsResolving = true;
                 } catch (IntentSender.SendIntentException e) {
                     Log.e(TAG, "Could not resolve " + connectionResult, e);
@@ -154,6 +160,27 @@ public class GacFragment extends Fragment implements
             Log.w(TAG, String.format("Not resolving (isResolving, shouldResolve) = (%b, %b)",
                     mIsResolving, mShouldResolve));
         }
+    }
+
+    /**
+     * This is a nasty hack. When calling startActivityForResult from a Fragment, the requestCode
+     * is tagged with the Fragment index and then the Activity (when super.onActivityResult is
+     * called) forwards the result to the calling fragment.  However this does not happen for
+     * IntentSender, so we need to manually mask our request codes so that they come back to
+     * onActivityResult in the Fragment.
+     *
+     * @param requestCode the original request code to mask.
+     * @return the masked request code to use instead.
+     */
+    private int maskRequestCode(int requestCode) {
+        if ((requestCode & 0xffff0000) != 0) {
+            throw new IllegalArgumentException("Can only use lower 16 bits for requestCode");
+        }
+
+        int fragmentIndex = getActivity().getSupportFragmentManager().getFragments().indexOf(this);
+        int maskedCode = requestCode + ((fragmentIndex + 1) << 16);
+
+        return maskedCode;
     }
 
     public boolean isConnected() {

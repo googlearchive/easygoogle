@@ -13,7 +13,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textStyle="bold"
-        android:text="Google Cloud Messaging" />
+        android:text="@string/title_gcm" />
 
     <TextView
         android:id="@+id/messaging_status"
@@ -24,7 +24,7 @@
         android:id="@+id/send_message_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Send Message" />
+        android:text="@string/send_message" />
     
     <View
         android:layout_width="match_parent"
@@ -34,7 +34,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textStyle="bold"
-        android:text="Google Sign-in" />
+        android:text="@string/title_google_sign_in" />
 
     <TextView
         android:id="@+id/sign_in_status"
@@ -43,20 +43,17 @@
         android:text="@string/status_signed_out" />
 
     <LinearLayout
+        android:id="@+id/layout_sign_in"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <com.google.android.gms.common.SignInButton
-            android:id="@+id/sign_in_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+        <!-- SignInButton will be injected here -->
 
         <Button
             android:id="@+id/sign_out_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Sign Out" />
+            android:text="@string/sign_out" />
     </LinearLayout>
-
 </LinearLayout>

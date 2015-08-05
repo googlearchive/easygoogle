@@ -4,4 +4,8 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="status_signed_out">Signed Out</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="title_google_sign_in">Google Sign-in</string>
+    <string name="send_message">Send Message</string>
+    <string name="title_gcm">Google Cloud Messaging</string>
 </resources>
