@@ -1,6 +1,5 @@
 package pub.devrel.easygoogle;
 
-import android.content.Intent;
 import android.support.v4.app.FragmentActivity;
 
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -65,10 +64,6 @@ public class Google {
                     MessagingFragment.newInstance(senderId));
         }
 
-    }
-
-    public boolean handleActivityResult(int requestCode, int resultCode, Intent data) {
-        return mGacFragment.handleActivityResult(requestCode, resultCode, data);
     }
 
     // TODO(samstern): hide this or discourage it

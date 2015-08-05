@@ -1,9 +1,13 @@
 package pub.devrel.easygoogle.gac;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
+import android.view.View;
+import android.view.ViewGroup;
 
+import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.Api;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Scope;
@@ -66,6 +70,27 @@ public class SignIn extends GacService {
         }
 
         return false;
+    }
+
+    public static SignInButton createSignInButton(final Google google, Context context,
+                                          ViewGroup container) {
+
+        // Create SignInButton and configure style
+        SignInButton signInButton = new SignInButton(context);
+        signInButton.setSize(SignInButton.SIZE_STANDARD);
+        signInButton.setColorScheme(SignInButton.COLOR_DARK);
+
+        // Make it start sign-in on click
+        signInButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SignIn.signIn(google);
+            }
+        });
+
+        // Add to the layout, return reference to the button for user styling
+        container.addView(signInButton, 0);
+        return signInButton;
     }
 
     public static void signIn(Google google) {

@@ -1,10 +1,10 @@
 package pub.devrel.easygoogle.sample;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.google.android.gms.plus.model.people.Person;
@@ -35,17 +35,12 @@ public class MainActivity extends AppCompatActivity implements
                 .setSignInListener(this)
                 .build();
 
-        findViewById(R.id.send_message_button).setOnClickListener(this);
-        findViewById(R.id.sign_in_button).setOnClickListener(this);
-        findViewById(R.id.sign_out_button).setOnClickListener(this);
-    }
+        // Inject sign-in button, automatcally configured to initiate sign-in when clicked.
+        SignIn.createSignInButton(mGoogle, this, (ViewGroup) findViewById(R.id.layout_sign_in));
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (!mGoogle.handleActivityResult(requestCode, resultCode, data)) {
-            // Do your own handling here..
-        }
+        // Click listeners for sign-out and message buttons
+        findViewById(R.id.send_message_button).setOnClickListener(this);
+        findViewById(R.id.sign_out_button).setOnClickListener(this);
     }
 
     @Override
@@ -72,10 +67,6 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.sign_in_button:
-                // Sign in with Google
-                SignIn.signIn(mGoogle);
-                break;
             case R.id.sign_out_button:
                 // Sign out with Google
                 SignIn.signOut(mGoogle);
