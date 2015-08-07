@@ -72,6 +72,12 @@ public class SignIn extends GacModule {
     }
 
     @Override
+    public void onStart() {}
+
+    @Override
+    public void onStop() {}
+
+    @Override
     public boolean handleActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == RC_SIGN_IN) {
             if (resultCode != Activity.RESULT_OK) {

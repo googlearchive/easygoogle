@@ -18,6 +18,7 @@ package pub.devrel.easygoogle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 
+import pub.devrel.easygoogle.gac.AppInvites;
 import pub.devrel.easygoogle.gac.GacFragment;
 import pub.devrel.easygoogle.gac.SignIn;
 import pub.devrel.easygoogle.gcm.Messaging;
@@ -43,9 +44,13 @@ public class Google {
     public static class Builder {
 
         private FragmentActivity mActivity;
+
         private SignIn.SignInListener mSignInListener;
+
         private Messaging.MessagingListener mMessagingListener;
         private String mSenderId;
+
+        private AppInvites.AppInviteListener mAppInviteListener;
 
         public Builder(FragmentActivity activity){
             mActivity = activity;
@@ -62,14 +67,24 @@ public class Google {
             return this;
         }
 
+        public Builder enableAppInvites(AppInvites.AppInviteListener listener) {
+            mAppInviteListener = listener;
+            return this;
+        }
+
         public Google build() {
             Google google = new Google(mActivity);
             if (mSignInListener != null) {
                 google.mGacFragment.enableSignIn(mSignInListener);
             }
+
             if (mSenderId != null) {
                 google.mMessagingFragment.setSenderId(mSenderId);
                 google.mMessagingFragment.setMessagingListener(mMessagingListener);
+            }
+
+            if (mAppInviteListener != null) {
+                google.mGacFragment.enableAppInvites(mAppInviteListener);
             }
             return google;
         }
@@ -97,5 +112,14 @@ public class Google {
         }
 
         return signIn;
+    }
+
+    public AppInvites getAppInvites() {
+        AppInvites appInvites = mGacFragment.getModule(AppInvites.class);
+        if (appInvites == null) {
+            Log.w(TAG, "AppInvites is not enabled, getAppInvites() returning null.");
+        }
+
+        return appInvites;
     }
 }

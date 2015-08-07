@@ -15,6 +15,7 @@
  */
 package pub.devrel.easygoogle.sample;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -25,6 +26,7 @@ import android.widget.TextView;
 import com.google.android.gms.plus.model.people.Person;
 
 import pub.devrel.easygoogle.Google;
+import pub.devrel.easygoogle.gac.AppInvites;
 import pub.devrel.easygoogle.gac.SignIn;
 import pub.devrel.easygoogle.gcm.Messaging;
 
@@ -34,7 +36,7 @@ import pub.devrel.easygoogle.gcm.Messaging;
 public class MainActivity extends AppCompatActivity implements
         SignIn.SignInListener,
         Messaging.MessagingListener,
-        View.OnClickListener {
+        View.OnClickListener, AppInvites.AppInviteListener {
 
     public static String TAG = "sample.MainActivity";
     private Google mGoogle;
@@ -47,14 +49,16 @@ public class MainActivity extends AppCompatActivity implements
         mGoogle = new Google.Builder(this)
                 .enableMessaging(this, getString(R.string.gcm_defaultSenderId))
                 .enableSignIn(this)
+                .enableAppInvites(this)
                 .build();
 
-        // Inject sign-in button, automatcally configured to initiate sign-in when clicked.
+        // Inject sign-in button, automatically configured to initiate sign-in when clicked.
         mGoogle.getSignIn().createSignInButton(this, (ViewGroup) findViewById(R.id.layout_sign_in));
 
         // Click listeners for sign-out and message buttons
         findViewById(R.id.send_message_button).setOnClickListener(this);
         findViewById(R.id.sign_out_button).setOnClickListener(this);
+        findViewById(R.id.send_invites_button).setOnClickListener(this);
     }
 
     @Override
@@ -79,6 +83,23 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
+    public void onInvitationReceived(String invitationId, String deepLink) {
+        ((TextView) findViewById(R.id.app_invites_status)).setText(
+                "Received invitation " + invitationId + ":" + deepLink);
+    }
+
+    @Override
+    public void onInvitationsSent(String[] ids) {
+        ((TextView) findViewById(R.id.app_invites_status)).setText(
+                "Sent " + ids.length + " invitations.");
+    }
+
+    @Override
+    public void onInvitationsFailed() {
+        ((TextView) findViewById(R.id.app_invites_status)).setText("Sending invitations failed.");
+    }
+
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.sign_out_button:
@@ -90,6 +111,11 @@ public class MainActivity extends AppCompatActivity implements
                 Bundle b = new Bundle();
                 b.putString("message", "I am a banana!");
                 mGoogle.getMessaging().send(b);
+                break;
+            case R.id.send_invites_button:
+                // Send App Invites
+                mGoogle.getAppInvites().sendInvitation(
+                        "Title", "Message", Uri.parse("http://example.com/id/12345"));
                 break;
         }
     }

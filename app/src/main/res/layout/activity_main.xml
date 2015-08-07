@@ -9,6 +9,7 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".MainActivity">
 
+    <!-- GCM -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -25,15 +26,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/send_message" />
-    
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="20dp" />
 
+    <!-- Sign In -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textStyle="bold"
+        android:layout_marginTop="20dp"
         android:text="@string/title_google_sign_in" />
 
     <TextView
@@ -56,4 +55,23 @@
             android:layout_height="wrap_content"
             android:text="@string/sign_out" />
     </LinearLayout>
+
+    <!-- App Invites -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:layout_marginTop="20dp"
+        android:text="@string/title_app_invites" />
+
+    <TextView
+        android:id="@+id/app_invites_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:id="@+id/send_invites_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/send_invites"/>
 </LinearLayout>

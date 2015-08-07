@@ -50,4 +50,8 @@ public abstract class GacModule {
     public abstract void onConnected();
 
     public abstract void onUnresolvableFailure();
+
+    public abstract void onStart();
+
+    public abstract void onStop();
 }

@@ -116,6 +116,10 @@ public class GacFragment extends Fragment implements
         if (mGoogleApiClient != null) {
             mGoogleApiClient.connect();
         }
+
+        for (GacModule module : mModules.values()) {
+            module.onStart();
+        }
     }
 
     @Override
@@ -123,6 +127,10 @@ public class GacFragment extends Fragment implements
         super.onStop();
         if (mGoogleApiClient != null) {
             mGoogleApiClient.disconnect();
+        }
+
+        for (GacModule module : mModules.values()) {
+            module.onStop();
         }
     }
 
@@ -251,5 +259,11 @@ public class GacFragment extends Fragment implements
         SignIn signIn = new SignIn(this);
         signIn.setListener(signInListener);
         mModules.put(SignIn.class, signIn);
+    }
+
+    public void enableAppInvites(AppInvites.AppInviteListener appInviteListener) {
+        AppInvites appInvites = new AppInvites(this);
+        appInvites.setListener(appInviteListener);
+        mModules.put(AppInvites.class, appInvites);
     }
 }

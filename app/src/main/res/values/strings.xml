@@ -8,4 +8,6 @@
     <string name="title_google_sign_in">Google Sign-in</string>
     <string name="send_message">Send Message</string>
     <string name="title_gcm">Google Cloud Messaging</string>
+    <string name="title_app_invites">App Invites</string>
+    <string name="send_invites">Send Invites</string>
 </resources>
