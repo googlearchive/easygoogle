@@ -31,14 +31,17 @@ import pub.devrel.easygoogle.gac.SignIn;
 import pub.devrel.easygoogle.gcm.Messaging;
 
 /**
- * Simple activity with GCM and Sign-In.
+ * Simple Activity demonstrating how to use the BaseGoogle library to quickly integrate
+ * Sign-In, App Invites, and Google Cloud Messaging.
  */
 public class MainActivity extends AppCompatActivity implements
         SignIn.SignInListener,
         Messaging.MessagingListener,
-        View.OnClickListener, AppInvites.AppInviteListener {
+        AppInvites.AppInviteListener,
+        View.OnClickListener {
 
     public static String TAG = "sample.MainActivity";
+
     private Google mGoogle;
 
     @Override
@@ -46,6 +49,9 @@ public class MainActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Initialize the Google object with access to Cloud Messaging, Sign-In, and App Invites.
+        // All APIs are accessed through the Google object and the result of asynchronous operations
+        // are returned through API-specific listener classes like {@link SignIn.SignInListener}.
         mGoogle = new Google.Builder(this)
                 .enableMessaging(this, getString(R.string.gcm_defaultSenderId))
                 .enableSignIn(this)

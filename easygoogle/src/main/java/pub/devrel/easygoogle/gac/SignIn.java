@@ -33,12 +33,37 @@ import com.google.android.gms.plus.model.people.Person;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Interface to the Google Sign In API, which can be used to determine the users identity. The
+ * default scopes "profile" and "email" are used to return basic information about the user
+ * (when possible) however this does not grant any authorization to use other Google APIs on
+ * behalf of the user. For more information visit:
+ * https://developers.google.com/identity/sign-in/android/
+ */
 public class SignIn extends GacModule {
 
+    /**
+     * Listener to be notified of asynchronous Sign In events, like sign in or sign out,
+     */
     public interface SignInListener {
+
+        /**
+         * The user has been signed successfully.
+         * @param person basic information abou the signed-in user like name and email.
+         */
         void onSignedIn(Person person);
-        void onSignedOut();
+
+        /**
+         * The sign in process failed, either due to user cancellation or unresolvable errors. The
+         * app should display a sign-in button and wait for the user to initiate action before
+         * attempting sign-in again.
+         */
         void onSignInFailed();
+
+        /**
+         * The user has been signed out and access has been revoked.
+         */
+        void onSignedOut();
     }
 
     private static final String TAG = SignIn.class.getSimpleName();
@@ -84,15 +109,20 @@ public class SignIn extends GacModule {
                 getFragment().setShouldResolve(false);
             }
 
-            getFragment().setIsResolving(false);
             getFragment().getGoogleApiClient().connect();
-
             return true;
         }
 
         return false;
     }
 
+    /**
+     * Add a {@link SignInButton} to the current Activity/Fragment. When clicked, the button
+     * will automatically make a call to {@link SignIn#signIn()}.
+     * @param context the calling context.
+     * @param container a ViewGroup into which the SignInButton should be placed as the first child.
+     * @return the instantiated SignInButton, which can be customized further.
+     */
     public SignInButton createSignInButton(Context context, ViewGroup container) {
 
         // Create SignInButton and configure style
@@ -113,16 +143,26 @@ public class SignIn extends GacModule {
         return signInButton;
     }
 
+    /**
+     * Initiate the sign in process, resolving all possible errors (showing account picker, consent
+     * screen, etc). This operation may result in UI being displayed, results are returned to
+     * the {@link pub.devrel.easygoogle.gac.SignIn.SignInListener}.
+     */
     public void signIn() {
-        Log.d(TAG, "signIn:");
+        Log.d(TAG, "signIn");
         getFragment().setShouldResolve(true);
         getFragment().setResolutionCode(RC_SIGN_IN);
         getFragment().getGoogleApiClient().reconnect();
     }
 
 
+    /**
+     * Initiate the sign out and disconnect process. Results are returned to the
+     * {@link pub.devrel.easygoogle.gac.SignIn.SignInListener}. If the user is not already signed
+     * in or the sign out operation fails, no result will be returned.
+     */
     public void signOut() {
-        Log.d(TAG, "signOut: ");
+        Log.d(TAG, "signOut");
         final GacFragment fragment = getFragment();
         if (!fragment.isConnected()) {
             Log.w(TAG, "Can't sign out, not signed in!");

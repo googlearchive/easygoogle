@@ -1,3 +1,18 @@
+/*
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package pub.devrel.easygoogle.gac;
 
 import android.app.Activity;
@@ -22,11 +37,37 @@ import java.util.List;
 
 import pub.devrel.easygoogle.R;
 
+/**
+ * Interface to the App Invites API, which can be used to send Email and/or SMS invitations
+ * to a user's contacts.  For more information visit: https://developers.google.com/app-invites/
+ */
 public class AppInvites extends GacModule {
 
+    /**
+     * Listener to be notified of asynchronous App Invite events, like invitation receipt
+     * or sending success.
+     */
     public interface AppInviteListener {
+
+        /**
+         * Called when the application has received an App Invite, either while running or through
+         * a Play Store install.  Before this callback is invoked, the invitation will be marked
+         * as completed through the App Invites API.
+         * @param invitationId the unique ID of the invitation.
+         * @param deepLink the deep link data sent with the invitation,
+         */
         void onInvitationReceived(String invitationId, String deepLink);
+
+        /**
+         * The user has successfully invited one or more contacts.
+         * @param ids an array of unique IDs, one for each invitation sent by the user. The same
+         *            id will be given to the recepient upon invitation receipt.
+         */
         void onInvitationsSent(String[] ids);
+
+        /**
+         * Sending invitations failed or the user canceled the operation.
+         */
         void onInvitationsFailed();
     }
 
@@ -53,6 +94,18 @@ public class AppInvites extends GacModule {
         };
     }
 
+    /**
+     * Launch the UI where the user can choose contacts and send invitations. The UI will be
+     * populated with the arguments of this method, however the user can choose to change the
+     * final invitation message. Success or failure of this call will be reported to
+     * {@link pub.devrel.easygoogle.gac.AppInvites.AppInviteListener}.
+     * @param title the title to display at the top of the invitation window. Cannot be
+     *              overridden by the user.
+     * @param message the message to suggest as the body of the invitation, this will be editable
+     *                by the sending user.
+     * @param deeplink a URI containing any information the receiving party will need to make use
+     *                 of the invitation, such as a coupon code or another identifier.
+     */
     public void sendInvitation(String title, String message, Uri deeplink) {
         Intent intent = new AppInviteInvitation.IntentBuilder(title)
                 .setMessage(message)

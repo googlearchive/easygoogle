@@ -21,6 +21,9 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 
+/**
+ * Utility class for common Fragment operations.
+ */
 public class FragmentUtils extends Fragment {
 
     private static final String TAG = FragmentUtils.class.getSimpleName();

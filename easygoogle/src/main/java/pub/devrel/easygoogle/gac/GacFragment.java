@@ -34,6 +34,10 @@ import java.util.Map;
 
 import pub.devrel.easygoogle.R;
 
+/**
+ * Fragment to manage the lifecycle of a GoogleApiClient in a generic way so that it can be
+ * used with different combinations of {@link GacModule} at runtime.
+ */
 public class GacFragment extends Fragment implements
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener {
@@ -86,6 +90,8 @@ public class GacFragment extends Fragment implements
         for (GacModule module : mModules.values()) {
             if (module.handleActivityResult(requestCode, resultCode, data)) {
                 handled = true;
+
+                mIsResolving = false;
                 break;
             }
         }
@@ -227,20 +233,33 @@ public class GacFragment extends Fragment implements
         return maskedCode;
     }
 
+    /**
+     * Determine if the GoogleApiClient exists and is connected with access to all requested APIs
+     * and Scopes.
+     * @return true if the GoogleApiClient is non-null and connected, false otherwise.
+     */
     public boolean isConnected() {
         return (mGoogleApiClient != null && mGoogleApiClient.isConnected());
     }
 
+    /**
+     * Determine if the Fragment should automatically resolve GoogleApiClient connection failures
+     * when possible. The default behavior is not to resolve connection failures.
+     * @param shouldResolve true if resolutions should be attempted until connection or
+     *                      unresolvable failure, false otherwise.
+     */
     public void setShouldResolve(boolean shouldResolve) {
         Log.d(TAG, "setShouldResolve:" + shouldResolve);
         mShouldResolve = shouldResolve;
     }
 
-    public void setIsResolving(boolean isResolving) {
-        Log.d(TAG, "setIsResolving:" + isResolving);
-        mIsResolving = isResolving;
-    }
-
+    /**
+     * Set the requestCode the Fragment should use when resolving a GoogleApiClient connection
+     * failure. This enables the {@link GacModule} to determine which calls to handleActivityResult
+     * it should handle and/or ignore.
+     * @param resolutionCode the resolution code to use for the next resolution, must be an integer
+     *                       and in the range 0 < x < 2^16.
+     */
     public void setResolutionCode(int resolutionCode) {
         mResolutionCode = resolutionCode;
     }
@@ -253,14 +272,22 @@ public class GacFragment extends Fragment implements
         return (T) mModules.get(clazz);
     }
 
-    // TODO(samstern): I can probably generalize this to "enableModule" if GacModule is genericized
-    // with the type of the listener for the module.
+    /**
+     * Enable the {@link SignIn} module.
+     * @param signInListener the listener to receive Sign In events.
+     */
     public void enableSignIn(SignIn.SignInListener signInListener) {
+        // TODO(samstern): I can probably generalize this to "enableModule" if GacModule is genericized
+        // with the type of the listener for the module.
         SignIn signIn = new SignIn(this);
         signIn.setListener(signInListener);
         mModules.put(SignIn.class, signIn);
     }
 
+    /**
+     * Enable the {@link AppInvites} module.
+     * @param appInviteListener the listener to receive App Invites events.
+     */
     public void enableAppInvites(AppInvites.AppInviteListener appInviteListener) {
         AppInvites appInvites = new AppInvites(this);
         appInvites.setListener(appInviteListener);

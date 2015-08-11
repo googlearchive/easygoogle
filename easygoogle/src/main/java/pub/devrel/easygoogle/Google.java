@@ -56,22 +56,42 @@ public class Google {
             mActivity = activity;
         }
 
+        /**
+         * Initialize {@link SignIn}.
+         * @param signInListener listener for sign in events,
+         * @return self, for chaining.
+         */
         public Builder enableSignIn(SignIn.SignInListener signInListener) {
             mSignInListener = signInListener;
             return this;
         }
 
+        /**
+         * Initialize {@link Messaging}.
+         * @param listener listener for GCM events.
+         * @param senderId GCM sender Id.
+         * @return self, for chaining.
+         */
         public Builder enableMessaging(Messaging.MessagingListener listener, String senderId) {
             mSenderId = senderId;
             mMessagingListener = listener;
             return this;
         }
 
+        /**
+         * Initialize {@link AppInvites}.
+         * @param listener listener for app invites events.
+         * @return self, for chaining.
+         */
         public Builder enableAppInvites(AppInvites.AppInviteListener listener) {
             mAppInviteListener = listener;
             return this;
         }
 
+        /**
+         * Build the {@link Google} instance for use with all enabled services,
+         * @return a Google instance.
+         */
         public Google build() {
             Google google = new Google(mActivity);
             if (mSignInListener != null) {
@@ -96,6 +116,11 @@ public class Google {
         mMessagingFragment =  FragmentUtils.getOrCreate(activity, TAG_MESSAGING_FRAGMENT, MessagingFragment.newInstance());
     }
 
+    /**
+     * Get the local {@link Messaging} instance to access public methods. If Messaging is not
+     * properly initialized, there will be a warning in logcat.
+     * @return a Messaging instance.
+     */
     public Messaging getMessaging() {
         Messaging messaging = mMessagingFragment.getMessaging();
         if (messaging == null) {
@@ -105,6 +130,11 @@ public class Google {
         return messaging;
     }
 
+    /**
+     * Get the local {@link SignIn} instance to access public methods. If SignIn is not
+     * properly initialized, there will be a warning in logcat.
+     * @return a SignIn instance.
+     */
     public SignIn getSignIn() {
         SignIn signIn = mGacFragment.getModule(SignIn.class);
         if (signIn == null) {
@@ -114,6 +144,11 @@ public class Google {
         return signIn;
     }
 
+    /**
+     * Get the local {@link AppInvites} instance to access public methods. If AppInvites is not
+     * properly initialized, there will be a warning in logcat.
+     * @return an AppInvites instance.
+     */
     public AppInvites getAppInvites() {
         AppInvites appInvites = mGacFragment.getModule(AppInvites.class);
         if (appInvites == null) {
