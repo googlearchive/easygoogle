@@ -1,8 +1,6 @@
 apply plugin: 'com.github.dcendents.android-maven'
-// TODO(samstern): https://github.com/bintray/gradle-bintray-plugin
 
 install {
-    println 'Installing easygoogle library.'
     repositories.mavenInstaller {
         pom.project {
             name 'EasyGoogle'

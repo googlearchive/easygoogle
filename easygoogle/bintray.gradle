@@ -1,0 +1,26 @@
+apply plugin: 'com.jfrog.bintray'
+
+// TODO(samstern): when I include these two lines I get the desired result but I get a 400, when
+// I do not include them I get a 200 but I get the wrong result...
+//group = 'pub.devrel'
+//version = '0.1'
+
+bintray {
+    user = System.getenv('BINTRAY_USER')
+    key = System.getenv('BINTRAY_KEY')
+
+    configurations = ['archives']
+
+    pkg {
+        // TODO(samstern): create an org and set userorg
+        repo = 'EasyGoogle'
+        name = 'easygoogle'
+        licenses = ['Apache-2.0']
+        vcsUrl = 'https://github.com/googlesamples/easygoogle.git'
+
+        version {
+            name = '0.1'
+            vcsTag = '0.1'
+        }
+    }
+}
