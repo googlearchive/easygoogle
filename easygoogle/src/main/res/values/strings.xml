@@ -1,7 +1,0 @@
-<resources>
-    <string name="app_name">easygoogle</string>
-    <string name="play_services_error_fmt">Google Play Services Error: %i</string>
-    <string name="action_deep_link">
-        pub.devrel.easygoogle.DEEP_LINK_ACTION
-    </string>
-</resources>
