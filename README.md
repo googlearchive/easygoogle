@@ -157,4 +157,4 @@ methods like `AppInvites#sendInvitation`.
 If you would like to perform some action using one of the enabled Google 
 services but it is not properly wrapped by the EasyGoogle library, just call
 `Google#getGoogleApiClient()` to get access to the underlying `GoogleApiClient`
-held by the `Google` object. Do this at your own risk.
+held by the `Google` object.
