@@ -46,12 +46,13 @@ public class MessageSenderService extends IntentService {
             Bundle data = intent.getBundleExtra(MessagingFragment.MESSAGE_ARG);
             String id = Integer.toString(sMessageId.incrementAndGet());
             Log.d(TAG, "Sending gcm message. " + senderEmail + "//" + data + "//" + id);
-            GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(this);
+
             try {
+                GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(this);
                 gcm.send(senderEmail, id, data);
                 Log.d(TAG, "Sent!");
             } catch (IOException e) {
-                e.printStackTrace();
+                Log.e(TAG, "Failed to send GCM Message.", e);
             }
         }
     }

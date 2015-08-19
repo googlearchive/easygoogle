@@ -29,6 +29,6 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:22.2.0'
 
-    // Fetch the EasyGoogle library from the local maven repo ("mavenLocal()")
-    compile 'pub.devrel:easygoogle:+'
+    // compile 'pub.devrel:easygoogle:+'
+    compile project(':easygoogle')
 }
