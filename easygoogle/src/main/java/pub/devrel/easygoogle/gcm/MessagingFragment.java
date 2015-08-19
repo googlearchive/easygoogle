@@ -63,8 +63,10 @@ public class MessagingFragment extends Fragment {
 
         mMessaging = new Messaging(this);
 
-        createReceiver();
-        register();
+        if (mListener != null) {
+            createReceiver();
+            register();
+        }
     }
 
     private void createReceiver() {
@@ -88,7 +90,6 @@ public class MessagingFragment extends Fragment {
     }
 
     public void register() {
-        Log.d(TAG, "register");
         Intent intent = new Intent(getActivity(), IDRegisterService.class);
         intent.putExtra(SENDER_ID_ARG, mSenderId);
         mContext.startService(intent);
@@ -106,7 +107,6 @@ public class MessagingFragment extends Fragment {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.d(TAG, "INTENT RECEIVED: " + intent.getAction());
             switch(intent.getAction()) {
                 case REGISTRATION_COMPLETE:
                     return;
