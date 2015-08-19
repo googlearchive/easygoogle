@@ -15,28 +15,39 @@
  */
 package pub.devrel.easygoogle.gcm;
 
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
 
 import com.google.android.gms.gcm.GcmListenerService;
 
-public class MessageListenerService extends GcmListenerService {
-    public MessageListenerService() {
-    }
+public abstract class EasyMessageService extends GcmListenerService {
 
-    public static final String TAG = "MessageListenerService";
+    public EasyMessageService() {}
 
     @Override
-    public void onMessageReceived(String from, Bundle data) {
-        String message = data.getString("message");
-        Log.d(TAG, "From: " + from);
-        Log.d(TAG, "Message: " + message);
+    public abstract void onMessageReceived(String from, Bundle data);
+
+    public boolean forwardToListener(String from, Bundle data) {
         Intent msg = new Intent(MessagingFragment.MESSAGE_RECEIVED);
         msg.putExtra(MessagingFragment.MESSAGE_ARG, data);
         msg.putExtra(MessagingFragment.MESSAGE_FROM_FIELD, from);
-        LocalBroadcastManager.getInstance(this).sendBroadcast(msg);
+
+        return LocalBroadcastManager.getInstance(this).sendBroadcast(msg);
     }
 
+    public PendingIntent createMessageIntent(String from, Bundle data,
+                                             Class<? extends Messaging.MessagingListener> target) {
+
+        // TODO(samstern): should I set flags on the PendingIntent?
+        Intent intent = new Intent(this, target);
+        intent.setAction(MessagingFragment.MESSAGE_RECEIVED);
+        intent.putExtra(MessagingFragment.MESSAGE_FROM_FIELD, from);
+        intent.putExtra(MessagingFragment.MESSAGE_ARG, data);
+        PendingIntent pendingIntent =
+                PendingIntent.getActivity(this, 0, intent, 0);
+
+        return pendingIntent;
+    }
 }

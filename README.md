@@ -7,7 +7,7 @@ Services.  The library wraps the following APIs (for now):
   * [Google App Invites](https://developers.google.com/app-invites/)
 
 ## Installation
-EasyGoogle is installed by adding the following dependency to your 
+EasyGoogle is installed by adding the following dependency to your
 `build.gradle` file:
 
     dependencies {
@@ -17,7 +17,7 @@ EasyGoogle is installed by adding the following dependency to your
 ## Usage
 
 ### Enabling Services
-Before you begin, visit [this page](https://developers.google.com/mobile/add) 
+Before you begin, visit [this page](https://developers.google.com/mobile/add)
 to select Google services and add them to your Android app. Once you have
 a `google-services.json` file in the proper place you can proceed to use
 EasyGoogle.
@@ -25,9 +25,9 @@ EasyGoogle.
 ### Basic
 EasyGoogle makes use of `Fragments` to manage the lifecycle of the
 `GoogleApiClient`, so any Activity which uses EasyGoogle must extend
-`FragmentActivity`.  
+`FragmentActivity`.
 
-All interaction with EasyGoogle is through the `Google` class, which is 
+All interaction with EasyGoogle is through the `Google` class, which is
 instantiated like this:
 
     public class MainActivity extends AppCompatActivity {
@@ -87,8 +87,55 @@ Then, use the `SignIn` object from `mGoogle.getSignIn()` to access API methods
 like `SignIn#signIn` and `SignIn#signOut`.
 
 ### Cloud Messaging
-To enable Cloud Messaging, call the appropriate method on `Google.Builder` and
-implement the `Messaging.MessagingListener` interface:
+To enable Cloud Messaging, you will have to implement a simple `Service` in your application.
+First, add the following to your `AndroidManifest.xml` inside the `application` tag:
+
+    <!-- This allows the app to receive GCM through EasyGoogle -->
+    <service
+        android:name=".MessageReceiverService"
+        android:enabled="true"
+        android:exported="false">
+        <intent-filter>
+            <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+        </intent-filter>
+    </service>
+
+Then implement a class called `MessageReceiverService` that extends `EasyMessageService`. Below is
+one example of such a class:
+
+  public class MessageReceiverService extends EasyMessageService {
+
+    @Override
+    public void onMessageReceived(String from, Bundle data) {
+        // If there is a running Activity that implements MessageListener, it should handle
+        // this message.
+        if (!forwardToListener(from, data)) {
+            // There is no active MessageListener to get this, I should fire a notification with
+            // a PendingIntent to an activity that can handle this
+            PendingIntent pendingIntent = createMessageIntent(from, data, MainActivity.class);
+            Notification notif = new NotificationCompat.Builder(this)
+                    .setContentTitle("Message from: " + from)
+                    .setContentText(data.getString("message"))
+                    .setSmallIcon(R.mipmap.ic_launcher)
+                    .setContentIntent(pendingIntent)
+                    .setAutoCancel(true)
+                    .build();
+
+            NotificationManager notificationManager =
+                    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager.notify(0, notif);
+        }
+    }
+
+}
+
+Note the use of the helper methods `forwardToListener` and `createMessageIntent`, which make
+it easier for you to either launch an Activity or create a Notification to handle the message.
+
+The `forwardToListener` method checks to see if there is an Activity that implements
+`Messaging.MessagingListener` in the foreground.  If there is, it sends the GCM message to the
+Activity to be handled.  To implement `Messaging.MessagingListener`, call the appropriate
+method on `Google.Builder` in your `Activity` and implement the interface:
 
     public class MainActivity extends AppCompatActivity implements
       Messaging.MessagingListener {
@@ -111,7 +158,7 @@ implement the `Messaging.MessagingListener` interface:
 
     }
 
-Then, use the `Messaging` object from `mGoogle.getSignIn()` to access API
+Then, use the `Messaging` object from `mGoogle.getMessaging()` to access API
 methodslike `Messaging#send`.
 
 ### App Invites
@@ -150,11 +197,11 @@ implement the `AppInvites.AppInviteListener` interface:
 
     }
 
-Then, use the `AppInvites` object from `mGoogle.getAppInvites()` to access API 
+Then, use the `AppInvites` object from `mGoogle.getAppInvites()` to access API
 methods like `AppInvites#sendInvitation`.
 
 ### Advanced Usage
-If you would like to perform some action using one of the enabled Google 
+If you would like to perform some action using one of the enabled Google
 services but it is not properly wrapped by the EasyGoogle library, just call
 `Google#getGoogleApiClient()` to get access to the underlying `GoogleApiClient`
 held by the `Google` object.

@@ -15,7 +15,6 @@
  */
 package pub.devrel.easygoogle.gcm;
 
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -27,20 +26,19 @@ import android.util.Log;
 
 
 public class MessagingFragment extends Fragment {
+    private static final String TAG = "MessagingFragment";
+
     public static final String SENDER_ID_ARG = "SENDER_ID";
     public static final String SENT_TOKEN_TO_SERVER = "SENT_TOKEN_TO_SERVER";
     public static final String REGISTRATION_COMPLETE = "REGISTRATION COMPLETE";
     public static final String MESSAGE_RECEIVED = "MESSAGE_RECEIVED";
     public static final String MESSAGE_FROM_FIELD = "MESSAGE_FROM";
-    private static final String TAG = "gf.MessagingFragment";
     public static final String MESSAGE_ARG = "MESSAGE_ARG";
 
     private String mSenderId;
     private Messaging mMessaging;
     private Messaging.MessagingListener mListener;
-    private Activity mContext;
     private BroadcastReceiver mReceiver;
-
 
     public static MessagingFragment newInstance() {
         return new MessagingFragment();
@@ -52,8 +50,8 @@ public class MessagingFragment extends Fragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
         if (getArguments() != null) {
             mSenderId = getArguments().getString(SENDER_ID_ARG);
@@ -62,37 +60,50 @@ public class MessagingFragment extends Fragment {
         }
 
         mMessaging = new Messaging(this);
-
         if (mListener != null) {
-            createReceiver();
             register();
         }
     }
 
-    private void createReceiver() {
-        BroadcastReceiver rec = new MessageBroadcastReceiver();
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        Intent intent = getActivity().getIntent();
+        if (intent != null && MESSAGE_RECEIVED.equals(intent.getAction())) {
+            parseMessageIntent(intent);
+        }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        // Register the local broadcast receiver
+        registerReceiver();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        // Unregister the local broadcast receiver
+        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mReceiver);
+    }
+
+    private void registerReceiver() {
+        mReceiver = new MessageBroadcastReceiver();
         IntentFilter filter = new IntentFilter();
         filter.addAction(REGISTRATION_COMPLETE);
         filter.addAction(MESSAGE_RECEIVED);
-        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(rec, filter);
-    }
 
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        mContext = activity;
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
+        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mReceiver, filter);
     }
 
     public void register() {
         Intent intent = new Intent(getActivity(), IDRegisterService.class);
         intent.putExtra(SENDER_ID_ARG, mSenderId);
-        mContext.startService(intent);
+        getActivity().startService(intent);
     }
 
     public void setMessagingListener(Messaging.MessagingListener messagingListener) {
@@ -111,25 +122,28 @@ public class MessagingFragment extends Fragment {
                 case REGISTRATION_COMPLETE:
                     return;
                 case MESSAGE_RECEIVED:
-                    Bundle data = intent.getBundleExtra(MESSAGE_ARG);
-                    String from = intent.getStringExtra(MESSAGE_FROM_FIELD);
-                    onMessageReceived(from, data);
+                    parseMessageIntent(intent);
                     return;
             }
         }
     }
 
+    private void parseMessageIntent(Intent intent) {
+        Bundle data = intent.getBundleExtra(MESSAGE_ARG);
+        String from = intent.getStringExtra(MESSAGE_FROM_FIELD);
+        onMessageReceived(from, data);
+    }
+
     public void send(Bundle data) {
-        Intent intent = new Intent(mContext, MessageSenderService.class);
+        Intent intent = new Intent(getActivity(), MessageSenderService.class);
         intent.putExtra(SENDER_ID_ARG, mSenderId);
         intent.putExtra(MESSAGE_ARG, data);
         getActivity().startService(intent);
     }
 
     private void onMessageReceived(String from, Bundle data) {
-        Log.d(TAG, "Message: " + from + data);
+        Log.d(TAG, "onMessageReceived:" + from + ":" + data);
         mListener.onMessageReceived(from, data);
-
     }
 
     public static String getSenderEmail(String senderId) {
