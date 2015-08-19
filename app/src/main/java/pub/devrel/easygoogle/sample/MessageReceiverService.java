@@ -25,7 +25,7 @@ import android.util.Log;
 
 import pub.devrel.easygoogle.gcm.EasyMessageService;
 
-public class MyMessageService extends EasyMessageService {
+public class MessageReceiverService extends EasyMessageService {
 
     private static final String TAG = "MyMessageService";
 

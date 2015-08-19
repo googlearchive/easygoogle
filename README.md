@@ -92,7 +92,7 @@ First, add the following to your `AndroidManifest.xml` inside the `application` 
 
     <!-- This allows the app to receive GCM through EasyGoogle -->
     <service
-        android:name=".MyMessageService"
+        android:name=".MessageReceiverService"
         android:enabled="true"
         android:exported="false">
         <intent-filter>
@@ -100,10 +100,10 @@ First, add the following to your `AndroidManifest.xml` inside the `application` 
         </intent-filter>
     </service>
 
-Then implement a class called `MyMessageService` that extends `EasyMessageService`. Below is
+Then implement a class called `MessageReceiverService` that extends `EasyMessageService`. Below is
 one example of such a class:
 
-  public class MyMessageService extends EasyMessageService {
+  public class MessageReceiverService extends EasyMessageService {
 
     @Override
     public void onMessageReceived(String from, Bundle data) {

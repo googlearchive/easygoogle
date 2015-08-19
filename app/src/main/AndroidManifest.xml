@@ -18,7 +18,7 @@
 
         <!-- This allows the app to receive GCM through EasyGoogle -->
         <service
-            android:name=".MyMessageService"
+            android:name=".MessageReceiverService"
             android:enabled="true"
             android:exported="false">
             <intent-filter>
