@@ -79,13 +79,6 @@ public class MessagingFragment extends Fragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         mContext = activity;
-        Log.d(TAG, "I AM AN ATTACHED BANANA");
-        try {
-            mListener = (Messaging.MessagingListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement MessagingListener");
-        }
     }
 
     @Override
