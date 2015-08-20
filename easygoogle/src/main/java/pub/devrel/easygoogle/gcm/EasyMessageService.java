@@ -40,13 +40,12 @@ public abstract class EasyMessageService extends GcmListenerService {
     public PendingIntent createMessageIntent(String from, Bundle data,
                                              Class<? extends Messaging.MessagingListener> target) {
 
-        // TODO(samstern): should I set flags on the PendingIntent?
         Intent intent = new Intent(this, target);
         intent.setAction(MessagingFragment.MESSAGE_RECEIVED);
         intent.putExtra(MessagingFragment.MESSAGE_FROM_FIELD, from);
         intent.putExtra(MessagingFragment.MESSAGE_ARG, data);
         PendingIntent pendingIntent =
-                PendingIntent.getActivity(this, 0, intent, 0);
+                PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         return pendingIntent;
     }
