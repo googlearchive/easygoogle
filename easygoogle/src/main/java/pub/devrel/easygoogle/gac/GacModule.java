@@ -17,6 +17,7 @@ package pub.devrel.easygoogle.gac;
 
 import android.content.Intent;
 
+import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.Api;
 import com.google.android.gms.common.api.Scope;
 
@@ -48,6 +49,8 @@ public abstract class GacModule {
     public abstract List<Scope> getScopes();
 
     public abstract void onConnected();
+
+    public abstract void onResolvableFailure(ConnectionResult connectionResult);
 
     public abstract void onUnresolvableFailure();
 

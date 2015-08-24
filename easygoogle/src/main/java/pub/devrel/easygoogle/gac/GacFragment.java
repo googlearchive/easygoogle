@@ -166,6 +166,12 @@ public class GacFragment extends Fragment implements
     public void onConnectionFailed(ConnectionResult connectionResult) {
         Log.d(TAG, "onConnectionFailed: " + connectionResult);
 
+        if (connectionResult.hasResolution()) {
+            for (GacModule module : mModules.values()) {
+                module.onResolvableFailure(connectionResult);
+            }
+        }
+
         if (!mIsResolving && mShouldResolve) {
             Log.d(TAG, "onConnectionFailed: resolving with code " + mResolutionCode);
             if (connectionResult.hasResolution()) {

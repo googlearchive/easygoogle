@@ -22,6 +22,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.Api;
 import com.google.android.gms.common.api.ResultCallback;
@@ -89,6 +90,11 @@ public class SignIn extends GacModule {
     public void onConnected() {
         Person currentPerson = Plus.PeopleApi.getCurrentPerson(getFragment().getGoogleApiClient());
         mSignInListener.onSignedIn(currentPerson);
+    }
+
+    @Override
+    public void onResolvableFailure(ConnectionResult connectionResult) {
+        mSignInListener.onSignInFailed();
     }
 
     @Override

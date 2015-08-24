@@ -27,6 +27,7 @@ import android.util.Log;
 import com.google.android.gms.appinvite.AppInvite;
 import com.google.android.gms.appinvite.AppInviteInvitation;
 import com.google.android.gms.appinvite.AppInviteReferral;
+import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.Api;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Scope;
@@ -204,6 +205,9 @@ public class AppInvites extends GacModule {
             mCachedInvitationIntent = null;
         }
     }
+
+    @Override
+    public void onResolvableFailure(ConnectionResult connectionResult) {}
 
     @Override
     public void onUnresolvableFailure() {}
