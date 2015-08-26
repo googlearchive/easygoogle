@@ -15,19 +15,50 @@
  */
 package pub.devrel.easygoogle.gcm;
 
+import android.app.IntentService;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 
-import com.google.android.gms.gcm.GcmListenerService;
+import pub.devrel.easygoogle.R;
 
-public abstract class EasyMessageService extends GcmListenerService {
 
-    public EasyMessageService() {}
+public abstract class EasyMessageService extends IntentService {
+
+    private static final String TAG = "EasyMessageService";
+
+    public static final String EXTRA_TOKEN = "token";
+    public static final String EXTRA_ACTION = "action";
+    public static final String EXTRA_FROM = "from";
+
+    public static final String ACTION_REGISTER = "register";
+
+    public EasyMessageService() {
+        super(TAG);
+    }
 
     @Override
+    public void onHandleIntent(Intent intent) {
+        String action = intent.getAction();
+        if (getString(R.string.action_new_token).equals(action)) {
+            String token = intent.getStringExtra(EXTRA_TOKEN);
+
+            onNewToken(token);
+        }
+
+        if (getString(R.string.action_new_message).equals(action)) {
+            String from = intent.getStringExtra(EXTRA_FROM);
+            Bundle data = intent.getExtras();
+            data.remove(EXTRA_FROM);
+
+            onMessageReceived(from, data);
+        }
+    }
+
     public abstract void onMessageReceived(String from, Bundle data);
+
+    public abstract void onNewToken(String token);
 
     public boolean forwardToListener(String from, Bundle data) {
         Intent msg = new Intent(MessagingFragment.MESSAGE_RECEIVED);
@@ -48,5 +79,19 @@ public abstract class EasyMessageService extends GcmListenerService {
                 PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         return pendingIntent;
+    }
+
+    /**
+     * Send an upstream GCM message with the following message data:
+     * {
+     *     token: $TOKEN,
+     *     action: "register"
+     * }
+     */
+    public void sendRegistrationMessage(String senderId, String token) {
+        Bundle bundle = new Bundle();
+        bundle.putString(EXTRA_TOKEN, token);
+        bundle.putString(EXTRA_ACTION, ACTION_REGISTER);
+        MessagingFragment.send(this, senderId, bundle);
     }
 }

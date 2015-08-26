@@ -16,6 +16,7 @@
 package pub.devrel.easygoogle.gcm;
 
 import android.content.Intent;
+import android.util.Log;
 
 import com.google.android.gms.iid.InstanceIDListenerService;
 
@@ -32,7 +33,10 @@ public class IDListenerService extends InstanceIDListenerService {
      */
     @Override
     public void onTokenRefresh() {
+        Log.d(TAG, "onTokenRefresh");
         // Fetch updated Instance ID token and notify our app's server of any changes (if applicable).
+        // TODO(samstern): I might not even need this class at all, it does not seem to do anything
+        // that I can't do directly in IDRegisterService (or vice versa).
         Intent intent = new Intent(this, IDRegisterService.class);
         startService(intent);
     }

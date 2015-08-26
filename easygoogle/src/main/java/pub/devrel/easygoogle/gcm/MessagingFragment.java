@@ -29,8 +29,6 @@ public class MessagingFragment extends Fragment {
     private static final String TAG = "MessagingFragment";
 
     public static final String SENDER_ID_ARG = "SENDER_ID";
-    public static final String SENT_TOKEN_TO_SERVER = "SENT_TOKEN_TO_SERVER";
-    public static final String REGISTRATION_COMPLETE = "REGISTRATION COMPLETE";
     public static final String MESSAGE_RECEIVED = "MESSAGE_RECEIVED";
     public static final String MESSAGE_FROM_FIELD = "MESSAGE_FROM";
     public static final String MESSAGE_ARG = "MESSAGE_ARG";
@@ -61,6 +59,7 @@ public class MessagingFragment extends Fragment {
 
         mMessaging = new Messaging(this);
         if (mListener != null) {
+            // TODO(afshar): how often do we want to do this?
             register();
         }
     }
@@ -94,7 +93,6 @@ public class MessagingFragment extends Fragment {
     private void registerReceiver() {
         mReceiver = new MessageBroadcastReceiver();
         IntentFilter filter = new IntentFilter();
-        filter.addAction(REGISTRATION_COMPLETE);
         filter.addAction(MESSAGE_RECEIVED);
 
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mReceiver, filter);
@@ -119,11 +117,9 @@ public class MessagingFragment extends Fragment {
         @Override
         public void onReceive(Context context, Intent intent) {
             switch(intent.getAction()) {
-                case REGISTRATION_COMPLETE:
-                    return;
                 case MESSAGE_RECEIVED:
                     parseMessageIntent(intent);
-                    return;
+                    break;
             }
         }
     }
@@ -135,19 +131,19 @@ public class MessagingFragment extends Fragment {
     }
 
     public void send(Bundle data) {
-        Intent intent = new Intent(getActivity(), MessageSenderService.class);
-        intent.putExtra(SENDER_ID_ARG, mSenderId);
+        send(getActivity(), mSenderId, data);
+    }
+
+    protected static void send(Context context, String senderId, Bundle data) {
+        Intent intent = new Intent(context, MessageSenderService.class);
+        intent.putExtra(SENDER_ID_ARG, senderId);
         intent.putExtra(MESSAGE_ARG, data);
-        getActivity().startService(intent);
+        context.startService(intent);
     }
 
     private void onMessageReceived(String from, Bundle data) {
         Log.d(TAG, "onMessageReceived:" + from + ":" + data);
         mListener.onMessageReceived(from, data);
-    }
-
-    public static String getSenderEmail(String senderId) {
-        return senderId + "@gcm.googleapis.com";
     }
 
     public Messaging getMessaging() {

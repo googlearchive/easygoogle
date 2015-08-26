@@ -92,18 +92,15 @@ First, add the following to your `AndroidManifest.xml` inside the `application` 
 
     <!-- This allows the app to receive GCM through EasyGoogle -->
     <service
-        android:name=".MessageReceiverService"
+        android:name=".MessagingService"
         android:enabled="true"
-        android:exported="false">
-        <intent-filter>
-            <action android:name="com.google.android.c2dm.intent.RECEIVE" />
-        </intent-filter>
-    </service>
+        android:exported="false"
+        android:permission="pub.devrel.easygoogle.GCM" />
 
-Then implement a class called `MessageReceiverService` that extends `EasyMessageService`. Below is
+Then implement a class called `MessagingService` that extends `EasyMessageService`. Below is
 one example of such a class:
 
-  public class MessageReceiverService extends EasyMessageService {
+  public class MessagingService extends EasyMessageService {
 
     @Override
     public void onMessageReceived(String from, Bundle data) {
@@ -112,6 +109,8 @@ one example of such a class:
         if (!forwardToListener(from, data)) {
             // There is no active MessageListener to get this, I should fire a notification with
             // a PendingIntent to an activity that can handle this
+            Log.d(TAG, "onMessageReceived: no active listeners");
+
             PendingIntent pendingIntent = createMessageIntent(from, data, MainActivity.class);
             Notification notif = new NotificationCompat.Builder(this)
                     .setContentTitle("Message from: " + from)
@@ -125,6 +124,13 @@ one example of such a class:
                     (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             notificationManager.notify(0, notif);
         }
+    }
+
+    @Override
+    public void onNewToken(String token) {
+        // Send a registration message to the server with our new token
+        String senderId = getString(R.string.gcm_defaultSenderId);
+        sendRegistrationMessage(senderId, token);
     }
 
 }

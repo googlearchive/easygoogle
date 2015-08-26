@@ -42,10 +42,10 @@ public class MessageSenderService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         if (intent != null) {
-            String senderEmail = MessagingFragment.getSenderEmail(intent.getStringExtra(MessagingFragment.SENDER_ID_ARG));
+            String senderEmail = getSenderEmail(intent.getStringExtra(MessagingFragment.SENDER_ID_ARG));
             Bundle data = intent.getBundleExtra(MessagingFragment.MESSAGE_ARG);
             String id = Integer.toString(sMessageId.incrementAndGet());
-            Log.d(TAG, "Sending gcm message. " + senderEmail + "//" + data + "//" + id);
+            Log.d(TAG, "Sending gcm message:" + senderEmail + ":" + data + ":" + id);
 
             try {
                 GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(this);
@@ -55,5 +55,9 @@ public class MessageSenderService extends IntentService {
                 Log.e(TAG, "Failed to send GCM Message.", e);
             }
         }
+    }
+
+    public static String getSenderEmail(String senderId) {
+        return senderId + "@gcm.googleapis.com";
     }
 }
