@@ -16,15 +16,13 @@
             </intent-filter>
         </activity>
 
-        <!-- This allows the app to receive GCM through EasyGoogle -->
+        <!-- Receive GCM Messages and Tokens from EasyGoogle -->
         <service
-            android:name=".MessageReceiverService"
+            android:name=".MessagingService"
             android:enabled="true"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
-            </intent-filter>
-        </service>
+            android:exported="false"
+            android:permission="pub.devrel.easygoogle.GCM"/>
+
     </application>
 
 </manifest>
