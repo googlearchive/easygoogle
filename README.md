@@ -18,8 +18,11 @@ EasyGoogle is installed by adding the following dependency to your
 
 ### Enabling Services
 Before you begin, visit [this page](https://developers.google.com/mobile/add)
-to select Google services and add them to your Android app. Once you have
-a `google-services.json` file in the proper place you can proceed to use
+to select Google services and add them to your Android app.  Make sure to enable any services
+you plan to use and follow all of the steps, including modifying your `build.gradle` files
+to enable the `google-services` plugin.
+
+Once you have a `google-services.json` file in the proper place you can proceed to use
 EasyGoogle.
 
 ### Basic
@@ -38,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_main);
 
     mGoogle = new Google.Builder(this).build();
   }
@@ -61,6 +65,7 @@ implement the `SignIn.SignInListener` interface:
    @Override
    protected void onCreate(Bundle savedInstanceState) {
      super.onCreate(savedInstanceState);
+     setContentView(R.layout.activity_main);
 
      mGoogle = new Google.Builder(this)
        .enableSignIn(this)
@@ -114,9 +119,7 @@ public class MessagingService extends EasyMessageService {
       // this message.
       if (!forwardToListener(from, data)) {
           // There is no active MessageListener to get this, I should fire a notification with
-          // a PendingIntent to an activity that can handle this
-          Log.d(TAG, "onMessageReceived: no active listeners");
-
+          // a PendingIntent to an activity that can handle this.
           PendingIntent pendingIntent = createMessageIntent(from, data, MainActivity.class);
           Notification notif = new NotificationCompat.Builder(this)
                   .setContentTitle("Message from: " + from)
@@ -158,6 +161,7 @@ public class MainActivity extends AppCompatActivity implements
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_main);
 
     mGoogle = new Google.Builder(this)
       .enableMessaging(this, getString(R.string.gcm_defaultSenderId))
@@ -187,6 +191,7 @@ public class MainActivity extends AppCompatActivity implements
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_main);
 
     mGoogle = new Google.Builder(this)
       .enableAppInvites(this)
