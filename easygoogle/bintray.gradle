@@ -14,11 +14,13 @@ bintray {
         // TODO(samstern): create an org and set userorg
         repo = projectName
         name = mavenArtifactId
+        userOrg = bintrayOrg
         licenses = [ 'Apache-2.0' ]
         vcsUrl = "${githubUrl}.git"
 
         version {
             name = mavenVersion
+            released = new Date()
         }
     }
 }
