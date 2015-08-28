@@ -30,18 +30,20 @@ EasyGoogle makes use of `Fragments` to manage the lifecycle of the
 All interaction with EasyGoogle is through the `Google` class, which is
 instantiated like this:
 
-    public class MainActivity extends AppCompatActivity {
+```java
+public class MainActivity extends AppCompatActivity {
 
-      private Google mGoogle;
+  private Google mGoogle;
 
-      @Override
-      protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
 
-        mGoogle = new Google.Builder(this).build();
-      }
+    mGoogle = new Google.Builder(this).build();
+  }
 
-    }
+}
+```
 
 Of course, instantiating a `Google` object like this won't do anything at all,
 you need to enable features individually.
@@ -50,37 +52,39 @@ you need to enable features individually.
 To enable Google Sign-In, call the appropriate method on `Google.Builder` and
 implement the `SignIn.SignInListener` interface:
 
-    public class MainActivity extends AppCompatActivity implements
-      SignIn.SignInListener {
+```java
+ public class MainActivity extends AppCompatActivity implements
+   SignIn.SignInListener {
 
-      private Google mGoogle;
+   private Google mGoogle;
 
-      @Override
-      protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+   @Override
+   protected void onCreate(Bundle savedInstanceState) {
+     super.onCreate(savedInstanceState);
 
-        mGoogle = new Google.Builder(this)
-          .enableSignIn(this)
-          .build();
-      }
+     mGoogle = new Google.Builder(this)
+       .enableSignIn(this)
+       .build();
+   }
 
-      @Override
-      public void onSignedIn(Person person) {
-          // Sign in was successful.
-      }
+   @Override
+   public void onSignedIn(Person person) {
+       // Sign in was successful.
+   }
 
-      @Override
-      public void onSignedOut() {
-          // Sign out was successful.
-      }
+   @Override
+   public void onSignedOut() {
+       // Sign out was successful.
+   }
 
-      @Override
-      public void onSignInFailed() {
-          // Sign in failed for some reason and should not be attempted again
-          // unless the user requests it.
-      }
+   @Override
+   public void onSignInFailed() {
+       // Sign in failed for some reason and should not be attempted again
+       // unless the user requests it.
+   }
 
-    }
+ }
+ ```
 
 Then, use the `SignIn` object from `mGoogle.getSignIn()` to access API methods
 like `SignIn#signIn` and `SignIn#signOut`.
@@ -89,50 +93,53 @@ like `SignIn#signIn` and `SignIn#signOut`.
 To enable Cloud Messaging, you will have to implement a simple `Service` in your application.
 First, add the following to your `AndroidManifest.xml` inside the `application` tag:
 
-    <!-- This allows the app to receive GCM through EasyGoogle -->
-    <service
-        android:name=".MessagingService"
-        android:enabled="true"
-        android:exported="false"
-        android:permission="pub.devrel.easygoogle.GCM" />
+```xml
+ <!-- This allows the app to receive GCM through EasyGoogle -->
+ <service
+     android:name=".MessagingService"
+     android:enabled="true"
+     android:exported="false"
+     android:permission="pub.devrel.easygoogle.GCM" />
+ ```
 
 Then implement a class called `MessagingService` that extends `EasyMessageService`. Below is
 one example of such a class:
 
-  public class MessagingService extends EasyMessageService {
+```java
+public class MessagingService extends EasyMessageService {
 
-    @Override
-    public void onMessageReceived(String from, Bundle data) {
-        // If there is a running Activity that implements MessageListener, it should handle
-        // this message.
-        if (!forwardToListener(from, data)) {
-            // There is no active MessageListener to get this, I should fire a notification with
-            // a PendingIntent to an activity that can handle this
-            Log.d(TAG, "onMessageReceived: no active listeners");
+  @Override
+  public void onMessageReceived(String from, Bundle data) {
+      // If there is a running Activity that implements MessageListener, it should handle
+      // this message.
+      if (!forwardToListener(from, data)) {
+          // There is no active MessageListener to get this, I should fire a notification with
+          // a PendingIntent to an activity that can handle this
+          Log.d(TAG, "onMessageReceived: no active listeners");
 
-            PendingIntent pendingIntent = createMessageIntent(from, data, MainActivity.class);
-            Notification notif = new NotificationCompat.Builder(this)
-                    .setContentTitle("Message from: " + from)
-                    .setContentText(data.getString("message"))
-                    .setSmallIcon(R.mipmap.ic_launcher)
-                    .setContentIntent(pendingIntent)
-                    .setAutoCancel(true)
-                    .build();
+          PendingIntent pendingIntent = createMessageIntent(from, data, MainActivity.class);
+          Notification notif = new NotificationCompat.Builder(this)
+                  .setContentTitle("Message from: " + from)
+                  .setContentText(data.getString("message"))
+                  .setSmallIcon(R.mipmap.ic_launcher)
+                  .setContentIntent(pendingIntent)
+                  .setAutoCancel(true)
+                  .build();
 
-            NotificationManager notificationManager =
-                    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-            notificationManager.notify(0, notif);
-        }
-    }
+          NotificationManager notificationManager =
+                  (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+          notificationManager.notify(0, notif);
+      }
+  }
 
-    @Override
-    public void onNewToken(String token) {
-        // Send a registration message to the server with our new token
-        String senderId = getString(R.string.gcm_defaultSenderId);
-        sendRegistrationMessage(senderId, token);
-    }
-
+  @Override
+  public void onNewToken(String token) {
+      // Send a registration message to the server with our new token
+      String senderId = getString(R.string.gcm_defaultSenderId);
+      sendRegistrationMessage(senderId, token);
+  }
 }
+```
 
 Note the use of the helper methods `forwardToListener` and `createMessageIntent`, which make
 it easier for you to either launch an Activity or create a Notification to handle the message.
@@ -142,26 +149,27 @@ The `forwardToListener` method checks to see if there is an Activity that implem
 Activity to be handled.  To implement `Messaging.MessagingListener`, call the appropriate
 method on `Google.Builder` in your `Activity` and implement the interface:
 
-    public class MainActivity extends AppCompatActivity implements
-      Messaging.MessagingListener {
+```java
+public class MainActivity extends AppCompatActivity implements
+  Messaging.MessagingListener {
 
-      private Google mGoogle;
+  private Google mGoogle;
 
-      @Override
-      protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
 
-        mGoogle = new Google.Builder(this)
-          .enableMessaging(this, getString(R.string.gcm_defaultSenderId))
-          .build();
-      }
+    mGoogle = new Google.Builder(this)
+      .enableMessaging(this, getString(R.string.gcm_defaultSenderId))
+      .build();
+  }
 
-      @Override
-      public void onMessageReceived(String from, Bundle message) {
-          // GCM message received.
-      }
-
-    }
+  @Override
+  public void onMessageReceived(String from, Bundle message) {
+      // GCM message received.
+  }
+}
+```
 
 Then, use the `Messaging` object from `mGoogle.getMessaging()` to access API
 methodslike `Messaging#send`.
@@ -170,37 +178,39 @@ methodslike `Messaging#send`.
 To enable App Invites, call the appropriate method on `Google.Builder` and
 implement the `AppInvites.AppInviteListener` interface:
 
-    public class MainActivity extends AppCompatActivity implements
-      AppInvites.AppInviteListener {
+```java
+public class MainActivity extends AppCompatActivity implements
+  AppInvites.AppInviteListener {
 
-      private Google mGoogle;
+  private Google mGoogle;
 
-      @Override
-      protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
 
-        mGoogle = new Google.Builder(this)
-          .enableAppInvites(this)
-          .build();
-      }
+    mGoogle = new Google.Builder(this)
+      .enableAppInvites(this)
+      .build();
+  }
 
-      @Override
-      public void onInvitationReceived(String invitationId, String deepLink) {
-          // Invitation recieved in the app.
-      }
+  @Override
+  public void onInvitationReceived(String invitationId, String deepLink) {
+      // Invitation recieved in the app.
+  }
 
-      @Override
-      public void onInvitationsSent(String[] ids) {
-          // The user selected contacts and invitations sent successfully.
-      }
+  @Override
+  public void onInvitationsSent(String[] ids) {
+      // The user selected contacts and invitations sent successfully.
+  }
 
-      @Override
-      public void onInvitationsFailed() {
-          // The user either canceled sending invitations or they failed to
-          // send due to some configuration error.
-      }
+  @Override
+  public void onInvitationsFailed() {
+      // The user either canceled sending invitations or they failed to
+      // send due to some configuration error.
+  }
 
-    }
+}
+```
 
 Then, use the `AppInvites` object from `mGoogle.getAppInvites()` to access API
 methods like `AppInvites#sendInvitation`.
