@@ -192,7 +192,7 @@ public class GacFragment extends Fragment implements
                 }
             }
         } else {
-            Log.w(TAG, String.format("Not resolving (isResolving, shouldResolve) = (%b, %b)",
+            Log.d(TAG, String.format("Not resolving (isResolving, shouldResolve) = (%b, %b)",
                     mIsResolving, mShouldResolve));
         }
     }

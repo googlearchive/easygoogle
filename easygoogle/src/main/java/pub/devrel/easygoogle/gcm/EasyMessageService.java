@@ -24,6 +24,17 @@ import android.support.v4.content.LocalBroadcastManager;
 import pub.devrel.easygoogle.R;
 
 
+/**
+ * Base class for background GCM functions in EasyGoogle. Your application should declare
+ * a service that extends this class and has the following declaration:
+ * <code>
+ *              <service
+ *                  android:name=".YourServiceClass"
+ *                  android:enabled="true"
+ *                  android:exported="false"
+ *                  android:permission="pub.devrel.easygoogle.GCM" />
+ * </code>
+ */
 public abstract class EasyMessageService extends IntentService {
 
     private static final String TAG = "EasyMessageService";
@@ -37,6 +48,20 @@ public abstract class EasyMessageService extends IntentService {
     public EasyMessageService() {
         super(TAG);
     }
+
+    /**
+     * Called when the applications receives a new GCM message.
+     * @param from the sender's ID.
+     * @param data arbitrary message data (determined by sender).
+     */
+    public abstract void onMessageReceived(String from, Bundle data);
+
+    /**
+     * Called when the application gets a new GCM ID Token.  This should be sent to your server
+     * (if you have one) using an upstream GCM. See {@link #sendRegistrationMessage(String, String)}.
+     * @param token the GCM ID Token.
+     */
+    public abstract void onNewToken(String token);
 
     @Override
     public void onHandleIntent(Intent intent) {
@@ -56,10 +81,14 @@ public abstract class EasyMessageService extends IntentService {
         }
     }
 
-    public abstract void onMessageReceived(String from, Bundle data);
-
-    public abstract void onNewToken(String token);
-
+    /**
+     * Forward message data to any active listeners. A listener is a running FragmentActivity that
+     * has enabled messaging on a {@link pub.devrel.easygoogle.Google} object.  If no such Activity
+     * is in the foreground, this is a no-op.
+     * @param from the message sender's ID.
+     * @param data arbitrary message data (determined by sender).
+     * @return true if there is a running listener to receive the message, false otherwise.
+     */
     public boolean forwardToListener(String from, Bundle data) {
         Intent msg = new Intent(MessagingFragment.MESSAGE_RECEIVED);
         msg.putExtra(MessagingFragment.MESSAGE_ARG, data);
@@ -68,6 +97,16 @@ public abstract class EasyMessageService extends IntentService {
         return LocalBroadcastManager.getInstance(this).sendBroadcast(msg);
     }
 
+    /**
+     * Create a {@code PendingIntent} from message data that can be used to populate a
+     * {@code Notficiation}.
+     * @param from the message sender's ID.
+     * @param data arbitrary messafe data (determined by sender).
+     * @param target the class to launch when the intent fires. This should be an Activity that is
+     *               host to a {@code Google} object. When the intent fires, the
+     *               {@code onMessageReceived(...)} callback will be fired.
+     * @return a PendingIntent to use with a Notification.
+     */
     public PendingIntent createMessageIntent(String from, Bundle data,
                                              Class<? extends Messaging.MessagingListener> target) {
 
@@ -82,11 +121,13 @@ public abstract class EasyMessageService extends IntentService {
     }
 
     /**
-     * Send an upstream GCM message with the following message data:
+     * Send an upstream GCM message with the following structure:
      * {
-     *     token: $TOKEN,
+     *     token: $TOKEN
      *     action: "register"
      * }
+     * @param senderId your GCM sender Id.
+     * @param token a GCM token retrieved from {@code onNewToken}.
      */
     public void sendRegistrationMessage(String senderId, String token) {
         Bundle bundle = new Bundle();

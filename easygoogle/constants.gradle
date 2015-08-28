@@ -1,0 +1,10 @@
+ext {
+    projectName = 'EasyGoogle'
+    projectDesc = 'A wrapper library for basic functions of Google Play Services APIs'
+
+    githubUrl = 'https://github.com/googlesamples/easygoogle'
+
+    mavenGroup = 'pub.devrel'
+    mavenArtifactId = 'easygoogle'
+    mavenVersion = '0.1'
+}

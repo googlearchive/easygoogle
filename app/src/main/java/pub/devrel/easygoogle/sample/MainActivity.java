@@ -31,7 +31,7 @@ import pub.devrel.easygoogle.gac.SignIn;
 import pub.devrel.easygoogle.gcm.Messaging;
 
 /**
- * Simple Activity demonstrating how to use the BaseGoogle library to quickly integrate
+ * Simple Activity demonstrating how to use the EasyGoogle library to quickly integrate
  * Sign-In, App Invites, and Google Cloud Messaging.
  */
 public class MainActivity extends AppCompatActivity implements
