@@ -17,10 +17,24 @@ package pub.devrel.easygoogle.gcm;
 
 import android.os.Bundle;
 
-// TODO(afshar): remove or use unused methods
+
+/**
+ * Interface to the Google Cloud Messaging API, which can be used to deliver push notifications
+ * and send messages back to a server. For more information visit:
+ * https://developers.google.com/cloud-messaging/
+ */
 public class Messaging {
 
+    /**
+     * Listener to be notified of asynchronous GCM events, like message receipt.
+     */
     public interface MessagingListener {
+
+        /**
+         * Called when a downstream GCM message is received.
+         * @param from the sender's ID.
+         * @param message arbitrary message data included by the sender.
+         */
         void onMessageReceived(String from, Bundle message);
     }
 
@@ -30,14 +44,15 @@ public class Messaging {
         mFragment = fragment;
     }
 
-    public void setListener(MessagingListener listener) {
-        mFragment.setMessagingListener(listener);
-    }
-
+    /**
+     * Send an upstream GCM message with some data.
+     * @param bundle arbitrary key-value data to include in the message.
+     */
     public void send(Bundle bundle) {
         mFragment.send(bundle);
     }
 
+    // TODO(afshar): remove or use unused methods
     public void setSenderId(String senderId) {
         mFragment.setSenderId(senderId);
         mFragment.register();

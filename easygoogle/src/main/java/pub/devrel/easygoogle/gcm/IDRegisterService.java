@@ -27,7 +27,6 @@ import java.util.List;
 
 import pub.devrel.easygoogle.R;
 
-
 public class IDRegisterService extends IntentService {
 
     public static final String TAG = "IDRegisterService";

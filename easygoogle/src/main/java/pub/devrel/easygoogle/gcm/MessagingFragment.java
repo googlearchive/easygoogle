@@ -24,7 +24,10 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
-
+/**
+ * Fragment to manage communication with the various GCM services and deliver messages and
+ * other events to the host activity automatically.
+ */
 public class MessagingFragment extends Fragment {
     private static final String TAG = "MessagingFragment";
 
@@ -42,7 +45,13 @@ public class MessagingFragment extends Fragment {
         return new MessagingFragment();
     }
 
-    // Required empty public constructor
+    protected static void send(Context context, String senderId, Bundle data) {
+        Intent intent = new Intent(context, MessageSenderService.class);
+        intent.putExtra(SENDER_ID_ARG, senderId);
+        intent.putExtra(MESSAGE_ARG, data);
+        context.startService(intent);
+    }
+
     public MessagingFragment() {
         super();
     }
@@ -91,10 +100,12 @@ public class MessagingFragment extends Fragment {
     }
 
     private void registerReceiver() {
-        mReceiver = new MessageBroadcastReceiver();
+        if (mReceiver == null) {
+            mReceiver = new MessageBroadcastReceiver();
+        }
+
         IntentFilter filter = new IntentFilter();
         filter.addAction(MESSAGE_RECEIVED);
-
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mReceiver, filter);
     }
 
@@ -112,18 +123,6 @@ public class MessagingFragment extends Fragment {
         mSenderId = senderId;
     }
 
-    private class MessageBroadcastReceiver extends BroadcastReceiver {
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            switch(intent.getAction()) {
-                case MESSAGE_RECEIVED:
-                    parseMessageIntent(intent);
-                    break;
-            }
-        }
-    }
-
     private void parseMessageIntent(Intent intent) {
         Bundle data = intent.getBundleExtra(MESSAGE_ARG);
         String from = intent.getStringExtra(MESSAGE_FROM_FIELD);
@@ -132,13 +131,6 @@ public class MessagingFragment extends Fragment {
 
     public void send(Bundle data) {
         send(getActivity(), mSenderId, data);
-    }
-
-    protected static void send(Context context, String senderId, Bundle data) {
-        Intent intent = new Intent(context, MessageSenderService.class);
-        intent.putExtra(SENDER_ID_ARG, senderId);
-        intent.putExtra(MESSAGE_ARG, data);
-        context.startService(intent);
     }
 
     private void onMessageReceived(String from, Bundle data) {
@@ -150,4 +142,15 @@ public class MessagingFragment extends Fragment {
         return mMessaging;
     }
 
+    private class MessageBroadcastReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            switch(intent.getAction()) {
+                case MESSAGE_RECEIVED:
+                    parseMessageIntent(intent);
+                    break;
+            }
+        }
+    }
 }

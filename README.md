@@ -38,8 +38,7 @@ instantiated like this:
       protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mGoogle = new Google.Builder(this)
-          .build();
+        mGoogle = new Google.Builder(this).build();
       }
 
     }

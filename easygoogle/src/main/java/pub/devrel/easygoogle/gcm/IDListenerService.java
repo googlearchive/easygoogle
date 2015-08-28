@@ -20,11 +20,13 @@ import android.util.Log;
 
 import com.google.android.gms.iid.InstanceIDListenerService;
 
+/**
+ * Trampoline service to launch {@link IDRegisterService} when a token refresh is needed.
+ */
 public class IDListenerService extends InstanceIDListenerService {
-    public IDListenerService() {
-    }
-
     private static final String TAG = "IDListenerService";
+
+    public IDListenerService() {}
 
     /**
      * Called if InstanceID token is updated. This may occur if the security of
@@ -34,7 +36,7 @@ public class IDListenerService extends InstanceIDListenerService {
     @Override
     public void onTokenRefresh() {
         Log.d(TAG, "onTokenRefresh");
-        // Fetch updated Instance ID token and notify our app's server of any changes (if applicable).
+
         // TODO(samstern): I might not even need this class at all, it does not seem to do anything
         // that I can't do directly in IDRegisterService (or vice versa).
         Intent intent = new Intent(this, IDRegisterService.class);

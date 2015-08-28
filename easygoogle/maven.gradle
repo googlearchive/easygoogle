@@ -1,17 +1,18 @@
 apply plugin: 'com.github.dcendents.android-maven'
+apply from: 'constants.gradle'
 
 install {
     repositories.mavenInstaller {
         pom.project {
-            name 'EasyGoogle'
-            description 'A wrapper library for basic functions of Google Play Services APIs'
-            url 'https://github.com/googlesamples/easygoogle'
+            name projectName
+            description projectDesc
+            url githubUrl
             inceptionYear '2015'
 
             packaging 'aar'
-            groupId 'pub.devrel'
-            artifactId 'easygoogle'
-            version '0.1'
+            groupId mavenGroup
+            artifactId mavenArtifactId
+            version mavenVersion
 
             licenses {
                 license {
@@ -21,8 +22,8 @@ install {
                 }
             }
             scm {
-                connection 'https://github.com/googlesamples/easygoogle.git'
-                url 'https://github.com/googlesamples/easygoogle'
+                connection "${githubUrl}.git"
+                url githubUrl
 
             }
             developers {

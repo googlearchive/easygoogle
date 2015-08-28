@@ -10,6 +10,9 @@ import android.util.Log;
 
 import pub.devrel.easygoogle.gcm.EasyMessageService;
 
+/**
+ * Background service to receive GCM events on behalf of the application.
+ */
 public class MessagingService extends EasyMessageService {
 
     public static final String TAG = "MessagingService";
@@ -43,6 +46,9 @@ public class MessagingService extends EasyMessageService {
     @Override
     public void onNewToken(String token) {
         Log.d(TAG, "onNewToken:" + token);
+
+        // When a new token is received, send it upstream so that the server knows about this
+        // client and can send downstream messages properly. This should happen infrequently.
         String senderId = getString(R.string.gcm_defaultSenderId);
         sendRegistrationMessage(senderId, token);
     }
