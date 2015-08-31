@@ -5,8 +5,8 @@ group = mavenGroup
 version = mavenVersion
 
 bintray {
-    user = System.getenv('BINTRAY_USER') ?: getProperty('BINTRAY_USER')
-    key = System.getenv('BINTRAY_KEY') ?: getProperty('BINTRAY_KEY')
+    user = hasProperty('BINTRAY_USER') ? getProperty('BINTRAY_USER') : System.getenv('BINTRAY_USER')
+    key = hasProperty('BINTRAY_KEY') ? getProperty('BINTRAY_KEY') : System.getenv('BINTRAY_KEY')
 
     configurations = [ 'archives' ]
 
