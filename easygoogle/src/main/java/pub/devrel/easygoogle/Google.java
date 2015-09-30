@@ -116,6 +116,20 @@ public class Google {
         mMessagingFragment =  FragmentUtils.getOrCreate(activity, TAG_MESSAGING_FRAGMENT, MessagingFragment.newInstance());
     }
 
+  /**
+     * Get the underlying {@link GoogleApiClient} instance to access public methods. If GoogleApiClient is not
+     * properly created, there will be a warning in logcat.
+     * @return the underlying GoogleApiClient instance.
+     */
+    public GoogleApiClient getGoogleApiClient() {
+        GoogleApiClient googleApiClient = mGacFragment.getGoogleApiClient();
+        if (googleApiClient == null) {
+            Log.w(TAG, "GoogleApiClient is not created, getGoogleApiClient() returning null.");
+        }
+
+        return googleApiClient;
+    }
+
     /**
      * Get the local {@link Messaging} instance to access public methods. If Messaging is not
      * properly initialized, there will be a warning in logcat.
