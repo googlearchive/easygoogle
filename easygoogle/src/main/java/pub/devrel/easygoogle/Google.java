@@ -18,6 +18,8 @@ package pub.devrel.easygoogle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 
+import com.google.android.gms.common.api.GoogleApiClient;
+
 import pub.devrel.easygoogle.gac.AppInvites;
 import pub.devrel.easygoogle.gac.GacFragment;
 import pub.devrel.easygoogle.gac.SignIn;
@@ -117,7 +119,7 @@ public class Google {
     }
 
   /**
-     * Get the underlying {@link GoogleApiClient} instance to access public methods. If GoogleApiClient is not
+     * Get the underlying <code>GoogleApiClient</code> instance to access public methods. If GoogleApiClient is not
      * properly created, there will be a warning in logcat.
      * @return the underlying GoogleApiClient instance.
      */
