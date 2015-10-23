@@ -20,6 +20,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -32,9 +33,12 @@ public class MessagingFragment extends Fragment {
     private static final String TAG = "MessagingFragment";
 
     public static final String SENDER_ID_ARG = "SENDER_ID";
+    public static final String GCM_PERMISSION_ARG = "GCM_PERMISSION";
     public static final String MESSAGE_RECEIVED = "MESSAGE_RECEIVED";
     public static final String MESSAGE_FROM_FIELD = "MESSAGE_FROM";
     public static final String MESSAGE_ARG = "MESSAGE_ARG";
+
+    public static final String GCM_PERMISSION_RES_NAME = "gcm_permission";
 
     private String mSenderId;
     private Messaging mMessaging;
@@ -49,7 +53,26 @@ public class MessagingFragment extends Fragment {
         Intent intent = new Intent(context, MessageSenderService.class);
         intent.putExtra(SENDER_ID_ARG, senderId);
         intent.putExtra(MESSAGE_ARG, data);
+        intent.putExtra(GCM_PERMISSION_ARG, getGcmPermissionName(context));
         context.startService(intent);
+    }
+
+    /**
+     * Get R.string.gcm_permission from the calling app's resources
+     * @param context calling app's context.
+     * @return the resource value for R.string.gcm_permission, throws IllegalArgumentException
+     * if this does not exist.
+     */
+    private static String getGcmPermissionName(Context context) {
+        int gcmPermissionResourceId = context.getResources()
+                .getIdentifier(GCM_PERMISSION_RES_NAME, "string", context.getPackageName());
+        if (gcmPermissionResourceId == 0) {
+            throw new IllegalArgumentException(
+                    "Error: must define " + GCM_PERMISSION_RES_NAME + " in strings.xml");
+        }
+
+        String gcmPermissionName = context.getString(gcmPermissionResourceId);
+        return gcmPermissionName;
     }
 
     public MessagingFragment() {
@@ -60,11 +83,17 @@ public class MessagingFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        // Sender ID
         if (getArguments() != null) {
             mSenderId = getArguments().getString(SENDER_ID_ARG);
         } else {
             Log.w(TAG, "getArguments() returned null, not setting senderId");
         }
+
+        // Messaging permission store
+        PreferenceManager.getDefaultSharedPreferences(getActivity()).edit()
+                .putString(GCMUtils.PREF_KEY_GCM_PERMISSION, getGcmPermissionName(getActivity()))
+                .commit();
 
         mMessaging = new Messaging(this);
         if (mListener != null) {
@@ -112,6 +141,7 @@ public class MessagingFragment extends Fragment {
     public void register() {
         Intent intent = new Intent(getActivity(), IDRegisterService.class);
         intent.putExtra(SENDER_ID_ARG, mSenderId);
+        intent.putExtra(GCM_PERMISSION_ARG, getGcmPermissionName(getActivity()));
         getActivity().startService(intent);
     }
 

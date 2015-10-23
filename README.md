@@ -96,7 +96,14 @@ like `SignIn#signIn` and `SignIn#signOut`.
 
 ### Cloud Messaging
 To enable Cloud Messaging, you will have to implement a simple `Service` in your application.
-First, add the following to your `AndroidManifest.xml` inside the `application` tag:
+
+First, pick a unique permission name and make the following string resource in your `strings.xml` file. It is important to pick a unique name:
+
+```xml
+<string name="gcm_permission">your.unique.gcm.permission.name.here</string>
+```
+
+Next, add the following to your `AndroidManifest.xml` inside the `application` tag:
 
 ```xml
  <!-- This allows the app to receive GCM through EasyGoogle -->
@@ -104,7 +111,7 @@ First, add the following to your `AndroidManifest.xml` inside the `application` 
      android:name=".MessagingService"
      android:enabled="true"
      android:exported="false"
-     android:permission="pub.devrel.easygoogle.GCM" />
+     android:permission="@string/gcm_permission" />
  ```
 
 Then implement a class called `MessagingService` that extends `EasyMessageService`. Below is

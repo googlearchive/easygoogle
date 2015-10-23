@@ -18,6 +18,7 @@ package pub.devrel.easygoogle.gcm;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.google.android.gms.gcm.GcmListenerService;
@@ -37,8 +38,14 @@ public class MessageListenerService extends GcmListenerService {
     public void onMessageReceived(String from, Bundle data) {
         Log.d(TAG, "onMessageReceived:" + from + ":" + data);
 
+        String gcmPermissionName = getGcmPermissionName();
+        if (gcmPermissionName == null) {
+            Log.w(TAG, "App has never run with messaging enabled, not initialized.");
+            return;
+        }
+
         // Notify all services with the PERMISSION_EASY_GCM permission about this message
-        List<ComponentName> components = GCMUtils.findServices(this, GCMUtils.PERMISSION_EASY_GCM);
+        List<ComponentName> components = GCMUtils.findServices(this, gcmPermissionName);
         for (ComponentName cn : components) {
             Log.d(TAG, "Launching: " + cn.toString());
 
@@ -50,5 +57,10 @@ public class MessageListenerService extends GcmListenerService {
 
             startService(newMessageIntent);
         }
+    }
+
+    private String getGcmPermissionName() {
+        return PreferenceManager.getDefaultSharedPreferences(this)
+                .getString(GCMUtils.PREF_KEY_GCM_PERMISSION, null);
     }
 }
