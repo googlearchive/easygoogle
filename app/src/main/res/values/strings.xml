@@ -10,4 +10,7 @@
     <string name="title_gcm">Google Cloud Messaging</string>
     <string name="title_app_invites">App Invites</string>
     <string name="send_invites">Send Invites</string>
+
+    <!-- GCM permission string, this needs to be unique for every app -->
+    <string name="gcm_permission">pub.devrel.easygoogle.sampleapp.GCM</string>
 </resources>

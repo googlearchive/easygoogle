@@ -38,6 +38,7 @@ public class IDRegisterService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         String senderId = intent.getStringExtra(MessagingFragment.SENDER_ID_ARG);
+        String gcmPermissionName = intent.getStringExtra(MessagingFragment.GCM_PERMISSION_ARG);
 
         try {
             // Initially this call goes out to the network to retrieve the token, subsequent calls
@@ -47,8 +48,7 @@ public class IDRegisterService extends IntentService {
             Log.i(TAG, "GCM Registration Token: " + token);
 
             // Find any services that could handle this
-            List<ComponentName> services = GCMUtils.findServices(this,
-                    GCMUtils.PERMISSION_EASY_GCM);
+            List<ComponentName> services = GCMUtils.findServices(this, gcmPermissionName);
 
             // Notify the services of a new token
             for (ComponentName cn : services) {

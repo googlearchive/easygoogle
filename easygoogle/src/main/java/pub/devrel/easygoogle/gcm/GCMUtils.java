@@ -31,8 +31,7 @@ import java.util.List;
 public class GCMUtils {
 
     private static final String TAG = "GCMUtils";
-
-    public static final String PERMISSION_EASY_GCM = "pub.devrel.easygoogle.GCM";
+    public static final String PREF_KEY_GCM_PERMISSION = "gcm_permission";
 
     /**
      * Find all services in the AndroidManifest with a given permission. This is useful when
