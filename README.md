@@ -5,13 +5,14 @@ Services.  The library wraps the following APIs (for now):
   * [Google Sign-In](https://developers.google.com/identity/sign-in/android/)
   * [Google Cloud Messaging](https://developers.google.com/cloud-messaging/)
   * [Google App Invites](https://developers.google.com/app-invites/)
+  * [Google SmartLock for Passwords](https://developers.google.com/identity/smartlock-passwords/android/)
 
 ## Installation
 EasyGoogle is installed by adding the following dependency to your
 `build.gradle` file:
 
     dependencies {
-      compile 'pub.devrel:easygoogle:0.2+'
+      compile 'pub.devrel:easygoogle:0.2.1+'
     }
 
 ## Usage
@@ -226,6 +227,49 @@ public class MainActivity extends AppCompatActivity implements
 
 Then, use the `AppInvites` object from `mGoogle.getAppInvites()` to access API
 methods like `AppInvites#sendInvitation`.
+
+### SmartLock for Passwords
+To enable Smart Lock for Passwords, call the appropriate method on `Google.Builder` and
+implement the `SmartLock.SmartLockListener` interface:
+
+```java
+public class MainActivity extends AppCompatActivity implements
+  SmartLock.SmartLockListener {
+
+  private Google mGoogle;
+
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_main);
+
+    mGoogle = new Google.Builder(this)
+      .enableSmartLock(this)
+      .build();
+  }
+
+  @Override
+  public void onCredentialRetrieved(Credential credential) {
+    // Successfully retrieved a Credential for the current device user.
+  }
+
+  @Override
+  public void onShouldShowCredentialPicker() {
+    // In order to retrieve a Credential, the app must show the picker dialog
+    // using the SmartLock#showCredentialPicker() method.
+  }
+
+  @Override
+  public void onCredentialRetrievalFailed() {
+    // The user has no stored credentials, or the retrieval operation failed or
+    // was canceled.
+  }
+
+}
+```
+
+Then, use the `SmartLock` object from `mGoogle.getSmartLock()` to access API
+methods like `SmartLock#getCredentials()` and `SmartLock#save()`.
 
 ### Advanced Usage
 If you would like to perform some action using one of the enabled Google

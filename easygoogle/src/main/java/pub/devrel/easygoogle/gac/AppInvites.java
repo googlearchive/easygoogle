@@ -27,7 +27,6 @@ import android.util.Log;
 import com.google.android.gms.appinvite.AppInvite;
 import com.google.android.gms.appinvite.AppInviteInvitation;
 import com.google.android.gms.appinvite.AppInviteReferral;
-import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.Api;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Scope;
@@ -42,7 +41,7 @@ import pub.devrel.easygoogle.R;
  * Interface to the App Invites API, which can be used to send Email and/or SMS invitations
  * to a user's contacts.  For more information visit: https://developers.google.com/app-invites/
  */
-public class AppInvites extends GacModule {
+public class AppInvites extends GacModule<AppInvites.AppInviteListener> {
 
     /**
      * Listener to be notified of asynchronous App Invite events, like invitation receipt
@@ -76,12 +75,9 @@ public class AppInvites extends GacModule {
     private static final int RC_INVITE = 9003;
 
     private BroadcastReceiver mDeepLinkReceiver;
-    private AppInviteListener mListener;
     private Intent mCachedInvitationIntent;
 
-    protected AppInvites(GacFragment fragment) {
-        super(fragment);
-
+    protected AppInvites() {
         // Instantiate local BroadcastReceiver for receiving broadcasts from
         // AppInvitesReferralReceiver.
         mDeepLinkReceiver = new BroadcastReceiver() {
@@ -129,7 +125,7 @@ public class AppInvites extends GacModule {
         // Notify the listener of the received invitation
         String invitationId = AppInviteReferral.getInvitationId(intent);
         String deepLink = AppInviteReferral.getDeepLink(intent);
-        mListener.onInvitationReceived(invitationId, deepLink);
+        getListener().onInvitationReceived(invitationId, deepLink);
     }
 
     private void updateInvitationStatus(Intent intent) {
@@ -147,6 +143,8 @@ public class AppInvites extends GacModule {
 
     @Override
     public void onStart() {
+        super.onStart();
+
         // If app is already installed app and launched with deep link that matches
         // DeepLinkActivity filter, then the referral info will be in the intent.
         Intent launchIntent = getFragment().getActivity().getIntent();
@@ -163,6 +161,8 @@ public class AppInvites extends GacModule {
 
     @Override
     public void onStop() {
+        super.onStop();
+
         if (mDeepLinkReceiver != null) {
             // Unregister the local BroadcastReceiver
             LocalBroadcastManager.getInstance(getFragment().getActivity()).unregisterReceiver(
@@ -175,9 +175,9 @@ public class AppInvites extends GacModule {
         if (requestCode == RC_INVITE) {
             if (resultCode == Activity.RESULT_OK) {
                 String[] ids = AppInviteInvitation.getInvitationIds(resultCode, data);
-                mListener.onInvitationsSent(ids);
+                getListener().onInvitationsSent(ids);
             } else {
-                mListener.onInvitationsFailed();
+                getListener().onInvitationsFailed();
             }
 
             return true;
@@ -199,20 +199,12 @@ public class AppInvites extends GacModule {
 
     @Override
     public void onConnected() {
+        super.onConnected();
+
         // If there is an invitation waiting to be updated, do it now
         if (mCachedInvitationIntent != null) {
             updateInvitationStatus(mCachedInvitationIntent);
             mCachedInvitationIntent = null;
         }
-    }
-
-    @Override
-    public void onResolvableFailure(ConnectionResult connectionResult) {}
-
-    @Override
-    public void onUnresolvableFailure() {}
-
-    public void setListener(AppInviteListener listener) {
-        mListener = listener;
     }
 }

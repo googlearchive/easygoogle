@@ -23,6 +23,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import pub.devrel.easygoogle.gac.AppInvites;
 import pub.devrel.easygoogle.gac.GacFragment;
 import pub.devrel.easygoogle.gac.SignIn;
+import pub.devrel.easygoogle.gac.SmartLock;
 import pub.devrel.easygoogle.gcm.Messaging;
 import pub.devrel.easygoogle.gcm.MessagingFragment;
 
@@ -53,6 +54,8 @@ public class Google {
         private String mSenderId;
 
         private AppInvites.AppInviteListener mAppInviteListener;
+
+        private SmartLock.SmartLockListener mSmartLockListener;
 
         public Builder(FragmentActivity activity){
             mActivity = activity;
@@ -91,13 +94,23 @@ public class Google {
         }
 
         /**
+         * Initialize {@link SmartLock}.
+         * @param listener listener for SmartLock events.
+         * @return self, for chaining.
+         */
+        public Builder enableSmartLock(SmartLock.SmartLockListener listener) {
+            mSmartLockListener = listener;
+            return this;
+        }
+
+        /**
          * Build the {@link Google} instance for use with all enabled services,
          * @return a Google instance.
          */
         public Google build() {
             Google google = new Google(mActivity);
             if (mSignInListener != null) {
-                google.mGacFragment.enableSignIn(mSignInListener);
+                google.mGacFragment.enableModule(SignIn.class, mSignInListener);
             }
 
             if (mSenderId != null) {
@@ -106,7 +119,11 @@ public class Google {
             }
 
             if (mAppInviteListener != null) {
-                google.mGacFragment.enableAppInvites(mAppInviteListener);
+                google.mGacFragment.enableModule(AppInvites.class, mAppInviteListener);
+            }
+
+            if (mSmartLockListener != null) {
+                google.mGacFragment.enableModule(SmartLock.class, mSmartLockListener);
             }
             return google;
         }
@@ -172,5 +189,19 @@ public class Google {
         }
 
         return appInvites;
+    }
+
+    /**
+     * Get the local {@link SmartLock} instance to access public methods. If SmartLock is not
+     * properly initialized, there will be a warning in logcat.
+     * @return a SmartLock instance.
+     */
+    public SmartLock getSmartLock() {
+        SmartLock smartLock = mGacFragment.getModule(SmartLock.class);
+        if (smartLock == null) {
+            Log.w(TAG, "SmartLock is not enabled, getSmartLock() returning null.");
+        }
+
+        return smartLock;
     }
 }
