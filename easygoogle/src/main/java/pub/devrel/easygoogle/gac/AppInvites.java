@@ -41,7 +41,7 @@ import pub.devrel.easygoogle.R;
  * Interface to the App Invites API, which can be used to send Email and/or SMS invitations
  * to a user's contacts.  For more information visit: https://developers.google.com/app-invites/
  */
-public class AppInvites extends GacModule {
+public class AppInvites extends GacModule<AppInvites.AppInviteListener> {
 
     /**
      * Listener to be notified of asynchronous App Invite events, like invitation receipt
@@ -75,12 +75,9 @@ public class AppInvites extends GacModule {
     private static final int RC_INVITE = 9003;
 
     private BroadcastReceiver mDeepLinkReceiver;
-    private AppInviteListener mListener;
     private Intent mCachedInvitationIntent;
 
-    protected AppInvites(GacFragment fragment) {
-        super(fragment);
-
+    protected AppInvites() {
         // Instantiate local BroadcastReceiver for receiving broadcasts from
         // AppInvitesReferralReceiver.
         mDeepLinkReceiver = new BroadcastReceiver() {
@@ -128,7 +125,7 @@ public class AppInvites extends GacModule {
         // Notify the listener of the received invitation
         String invitationId = AppInviteReferral.getInvitationId(intent);
         String deepLink = AppInviteReferral.getDeepLink(intent);
-        mListener.onInvitationReceived(invitationId, deepLink);
+        getListener().onInvitationReceived(invitationId, deepLink);
     }
 
     private void updateInvitationStatus(Intent intent) {
@@ -178,9 +175,9 @@ public class AppInvites extends GacModule {
         if (requestCode == RC_INVITE) {
             if (resultCode == Activity.RESULT_OK) {
                 String[] ids = AppInviteInvitation.getInvitationIds(resultCode, data);
-                mListener.onInvitationsSent(ids);
+                getListener().onInvitationsSent(ids);
             } else {
-                mListener.onInvitationsFailed();
+                getListener().onInvitationsFailed();
             }
 
             return true;
@@ -209,9 +206,5 @@ public class AppInvites extends GacModule {
             updateInvitationStatus(mCachedInvitationIntent);
             mCachedInvitationIntent = null;
         }
-    }
-
-    public void setListener(AppInviteListener listener) {
-        mListener = listener;
     }
 }

@@ -30,16 +30,19 @@ import pub.devrel.easygoogle.Google;
  * reacts to onConnected events.  Implementers should offer static methods that accept an
  * {@link Google} as a parameter to represent very common API methods.
  */
-public abstract class GacModule {
+public abstract class GacModule<T> {
 
     private GacFragment mFragment;
+    private T mListener;
 
-    protected GacModule(GacFragment fragment) {
-        mFragment = fragment;
-    }
+    public GacModule() {}
 
     protected GacFragment getFragment() {
         return mFragment;
+    }
+
+    protected void setFragment(GacFragment fragment) {
+        mFragment = fragment;
     }
 
     public abstract boolean handleActivityResult(int requestCode, int resultCode, Intent data);
@@ -61,4 +64,12 @@ public abstract class GacModule {
     public void onStart() {}
 
     public void onStop() {}
+
+    public T getListener() {
+        return mListener;
+    }
+
+    public void setListener(T listener) {
+        mListener = listener;
+    }
 }

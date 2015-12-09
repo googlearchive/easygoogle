@@ -35,7 +35,7 @@ import pub.devrel.easygoogle.gcm.Messaging;
 
 /**
  * Simple Activity demonstrating how to use the EasyGoogle library to quickly integrate
- * Sign-In, App Invites, and Google Cloud Messaging.
+ * Sign-In, App Invites, Google Cloud Messaging, and SmartLock for Passwords.
  */
 public class MainActivity extends AppCompatActivity implements
         SignIn.SignInListener,
@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity implements
     public void onSignedIn(GoogleSignInAccount account) {
         Log.d(TAG, "onSignedIn:" + account.getEmail());
         ((TextView) findViewById(R.id.sign_in_status)).setText(
-                "Signed in as: " + account.getDisplayName() + " (" + account.getEmail() + ")");
+                getString(R.string.status_signed_in_fmt, account.getDisplayName(), account.getEmail()));
     }
 
     @Override
@@ -98,35 +98,35 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onSignInFailed() {
-        ((TextView) findViewById(R.id.sign_in_status)).setText("Sign in failed.");
+        ((TextView) findViewById(R.id.sign_in_status)).setText(R.string.status_sign_in_failed);
     }
 
     @Override
     public void onMessageReceived(String from, Bundle message) {
-        Log.d(TAG, "onMessageReceived:" + from + ":" + message);
-        ((TextView) findViewById(R.id.messaging_status)).setText("Message from " + from);
+        ((TextView) findViewById(R.id.messaging_status)).setText(
+                getString(R.string.status_message_fmt, from));
     }
 
     @Override
     public void onInvitationReceived(String invitationId, String deepLink) {
         ((TextView) findViewById(R.id.app_invites_status)).setText(
-                "Received invitation " + invitationId + ":" + deepLink);
+                getString(R.string.status_invitation_fmt, invitationId, deepLink));
     }
 
     @Override
     public void onInvitationsSent(String[] ids) {
         ((TextView) findViewById(R.id.app_invites_status)).setText(
-                "Sent " + ids.length + " invitations.");
+                getString(R.string.status_invitation_sent_fmt, ids.length));
     }
 
     @Override
     public void onInvitationsFailed() {
-        ((TextView) findViewById(R.id.app_invites_status)).setText("Sending invitations failed.");
+        ((TextView) findViewById(R.id.app_invites_status)).setText(R.string.status_invitation_failed);
     }
 
     @Override
     public void onCredentialRetrieved(Credential credential) {
-        ((TextView) findViewById(R.id.smartlock_status)).setText("Credential retrieved.");
+        ((TextView) findViewById(R.id.smartlock_status)).setText(R.string.status_credential_retrieved);
         mCredential = credential;
         mUsernameField.setText(credential.getId());
         mPasswordField.setText(credential.getPassword());
@@ -134,13 +134,12 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onShouldShowCredentialPicker() {
-        Log.d(TAG, "onShouldShowCredentialPicker");
         mGoogle.getSmartLock().showCredentialPicker();
     }
 
     @Override
     public void onCredentialRetrievalFailed() {
-        ((TextView) findViewById(R.id.smartlock_status)).setText("Credential retrieval failed.");
+        ((TextView) findViewById(R.id.smartlock_status)).setText(R.string.status_credential_failed);
         mUsernameField.setText(null);
         mPasswordField.setText(null);
     }

@@ -67,7 +67,7 @@ public class GacFragment extends Fragment implements
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this);
 
-        for (GacModule api : mModules.values()) {
+        for (GacModule<?> api : mModules.values()) {
             for (Api apiObj : api.getApis()) {
                 // Add Api with options, if possible
                 Api.ApiOptions.HasOptions options = api.getOptionsFor(apiObj);
@@ -285,34 +285,22 @@ public class GacFragment extends Fragment implements
     }
 
     /**
-     * Enable the {@link SignIn} module.
-     * @param signInListener the listener to receive Sign In events.
+     * Enable an {@link GacModule} such as {@link SignIn} or {@link SmartLock}.
+     * @param clazz Class object the subclass of GacModule.
+     * @param listener the appropriate listener for the GacModule subclass.
+     * @param <M> subclass of GacModule.
+     * @param <L> type parameter of 'M' class.
      */
-    public void enableSignIn(SignIn.SignInListener signInListener) {
-        // TODO(samstern): I can probably generalize this to "enableModule" if GacModule is genericized
-        // with the type of the listener for the module.
-        SignIn signIn = new SignIn(this);
-        signIn.setListener(signInListener);
-        mModules.put(SignIn.class, signIn);
-    }
-
-    /**
-     * Enable the {@link AppInvites} module.
-     * @param appInviteListener the listener to receive App Invites events.
-     */
-    public void enableAppInvites(AppInvites.AppInviteListener appInviteListener) {
-        AppInvites appInvites = new AppInvites(this);
-        appInvites.setListener(appInviteListener);
-        mModules.put(AppInvites.class, appInvites);
-    }
-
-    /**
-     * Enable the {@link SmartLock} module.
-     * @param smartLockListener the listener to receive SmartLock events.
-     */
-    public void enableSmartLock(SmartLock.SmartLockListener smartLockListener) {
-        SmartLock smartLock = new SmartLock(this);
-        smartLock.setListener(smartLockListener);
-        mModules.put(SmartLock.class, smartLock);
+    public <M extends GacModule<L>, L> void enableModule(Class<M> clazz, L listener) {
+        try {
+            M module = clazz.newInstance();
+            module.setFragment(this);
+            module.setListener(listener);
+            mModules.put(clazz, module);
+        } catch (java.lang.InstantiationException e) {
+            Log.e(TAG, "enableModule:InstantiationException", e);
+        } catch (IllegalAccessException e) {
+            Log.e(TAG, "enableModule:IllegalAccessExeption", e);
+        }
     }
 }

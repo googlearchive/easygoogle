@@ -28,7 +28,7 @@ import java.util.List;
  * all of their devices. For more information, visit:
  * https://developers.google.com/identity/smartlock-passwords/android
  */
-public class SmartLock extends GacModule {
+public class SmartLock extends GacModule<SmartLock.SmartLockListener> {
 
     /**
      * Listener to be notified of asynchronous SmartLock events, like loading Credentials.
@@ -60,20 +60,16 @@ public class SmartLock extends GacModule {
     private static final int RC_READ = 9016;
     private static final int RC_SAVE = 9017;
 
-    private SmartLockListener mListener;
-
-    protected SmartLock(GacFragment fragment) {
-        super(fragment);
-    }
+    protected SmartLock() {}
 
     @Override
     public boolean handleActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == RC_READ) {
             if (resultCode == Activity.RESULT_OK && data != null) {
                 Credential credential = data.getParcelableExtra(Credential.EXTRA_KEY);
-                mListener.onCredentialRetrieved(credential);
+                getListener().onCredentialRetrieved(credential);
             } else {
-                mListener.onCredentialRetrievalFailed();
+                getListener().onCredentialRetrievalFailed();
             }
 
             return true;
@@ -124,16 +120,16 @@ public class SmartLock extends GacModule {
                         if (result.getStatus().isSuccess()) {
                             // Single credential, auto sign-in
                             Credential credential = result.getCredential();
-                            mListener.onCredentialRetrieved(credential);
+                            getListener().onCredentialRetrieved(credential);
                         } else if (result.getStatus().hasResolution() &&
                                 result.getStatus().getStatusCode() != CommonStatusCodes.SIGN_IN_REQUIRED) {
                             // Multiple credentials or auto-sign in disabled.  If the status
                             // code is SIGN_IN_REQUIRED then it is a hint credential, which we
                             // do not want at this point.
-                            mListener.onShouldShowCredentialPicker();
+                            getListener().onShouldShowCredentialPicker();
                         } else {
                             // Could not retrieve credentials
-                            mListener.onCredentialRetrievalFailed();
+                            getListener().onCredentialRetrievalFailed();
                         }
                     }
                 });
@@ -152,7 +148,7 @@ public class SmartLock extends GacModule {
                 .setResultCallback(new ResolvingResultCallbacks<CredentialRequestResult>(activity, maskedCode) {
                     @Override
                     public void onSuccess(CredentialRequestResult result) {
-                        mListener.onCredentialRetrieved(result.getCredential());
+                        getListener().onCredentialRetrieved(result.getCredential());
                     }
 
                     @Override
@@ -218,10 +214,6 @@ public class SmartLock extends GacModule {
                         Log.d(TAG, "delete:onResult:" + status);
                     }
                 });
-    }
-
-    public void setListener(SmartLockListener listener) {
-        mListener = listener;
     }
 
     private CredentialRequest buildCredentialRequest() {

@@ -1,19 +1,31 @@
 <resources>
     <string name="app_name">easygoogle</string>
 
-    <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
-    <string name="status_signed_out">Signed Out</string>
-    <string name="sign_out">Sign Out</string>
-    <string name="title_google_sign_in">Google Sign-in</string>
-    <string name="send_message">Send Message</string>
-    <string name="title_gcm">Google Cloud Messaging</string>
-    <string name="title_app_invites">App Invites</string>
-    <string name="send_invites">Send Invites</string>
-
+    <!-- IMPORTANT -->
     <!-- GCM permission string, this needs to be unique for every app -->
     <string name="gcm_permission">pub.devrel.easygoogle.sampleapp.GCM</string>
+
+    <!-- Section titles -->
+    <string name="title_google_sign_in">Google Sign-in</string>
+    <string name="title_gcm">Google Cloud Messaging</string>
+    <string name="title_app_invites">App Invites</string>
     <string name="title_smart_lock">SmartLock for Passwords</string>
+
+    <!-- Status messages -->
+    <string name="status_signed_out">Signed out.</string>
+    <string name="status_signed_in_fmt" formatted="false">Signed in as: %s (%s)</string>
+    <string name="status_sign_in_failed">Sign in failed.</string>
+    <string name="status_message_fmt" formatted="false">Message from %s.</string>
+    <string name="status_invitation_fmt" formatted="false">Received invitation %s:%s.</string>
+    <string name="status_invitation_sent_fmt" formatted="false">Sent %d invitations.</string>
+    <string name="status_invitation_failed">Sending invitations failed.</string>
+    <string name="status_credential_retrieved">Credential retrieved.</string>
+    <string name="status_credential_failed">Credential retrieval failed.</string>
+
+    <!-- Button and field labels -->
+    <string name="sign_out">Sign Out</string>
+    <string name="send_message">Send Message</string>
+    <string name="send_invites">Send Invites</string>
     <string name="smartlock_load">Load</string>
     <string name="smartlock_save">Save</string>
     <string name="smartlock_delete">Delete</string>

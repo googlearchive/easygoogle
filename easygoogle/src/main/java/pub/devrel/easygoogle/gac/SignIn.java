@@ -43,7 +43,7 @@ import java.util.List;
  * behalf of the user. For more information visit:
  * https://developers.google.com/identity/sign-in/android/
  */
-public class SignIn extends GacModule {
+public class SignIn extends GacModule<SignIn.SignInListener> {
 
     /**
      * Listener to be notified of asynchronous Sign In events, like sign in or sign out,
@@ -72,11 +72,7 @@ public class SignIn extends GacModule {
     private static final String TAG = SignIn.class.getSimpleName();
     public static final int RC_SIGN_IN = 9001;
 
-    private SignIn.SignInListener mSignInListener;
-
-    public SignIn(GacFragment fragment) {
-        super(fragment);
-    }
+    public SignIn() {}
 
     @Override
     public List<Api> getApis() {
@@ -109,9 +105,9 @@ public class SignIn extends GacModule {
                     @Override
                     public void onResult(GoogleSignInResult googleSignInResult) {
                         if (googleSignInResult.isSuccess()) {
-                            mSignInListener.onSignedIn(googleSignInResult.getSignInAccount());
+                            getListener().onSignedIn(googleSignInResult.getSignInAccount());
                         } else {
-                            mSignInListener.onSignInFailed();
+                            getListener().onSignInFailed();
                         }
                     }
                 });
@@ -126,9 +122,9 @@ public class SignIn extends GacModule {
             if (data != null) {
                 GoogleSignInResult gsr = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
                 if (gsr != null && gsr.isSuccess()) {
-                    mSignInListener.onSignedIn(gsr.getSignInAccount());
+                    getListener().onSignedIn(gsr.getSignInAccount());
                 } else {
-                    mSignInListener.onSignInFailed();
+                    getListener().onSignInFailed();
                 }
             }
 
@@ -209,15 +205,11 @@ public class SignIn extends GacModule {
                     @Override
                     public void onResult(Status status) {
                         if (status.isSuccess()) {
-                            mSignInListener.onSignedOut();
+                            getListener().onSignedOut();
                         } else {
                             Log.w(TAG, "Could not sign out: " + status);
                         }
                     }
                 });
-    }
-
-    public void setListener(SignInListener listener) {
-        mSignInListener = listener;
     }
 }

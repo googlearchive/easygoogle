@@ -110,7 +110,7 @@ public class Google {
         public Google build() {
             Google google = new Google(mActivity);
             if (mSignInListener != null) {
-                google.mGacFragment.enableSignIn(mSignInListener);
+                google.mGacFragment.enableModule(SignIn.class, mSignInListener);
             }
 
             if (mSenderId != null) {
@@ -119,11 +119,11 @@ public class Google {
             }
 
             if (mAppInviteListener != null) {
-                google.mGacFragment.enableAppInvites(mAppInviteListener);
+                google.mGacFragment.enableModule(AppInvites.class, mAppInviteListener);
             }
 
             if (mSmartLockListener != null) {
-                google.mGacFragment.enableSmartLock(mSmartLockListener);
+                google.mGacFragment.enableModule(SmartLock.class, mSmartLockListener);
             }
             return google;
         }

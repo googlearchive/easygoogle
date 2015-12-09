@@ -1,6 +1,6 @@
 # 0.2.1
 
-  * Added new module for SmartLock for Passwords
+  * Added new module for SmartLock for Passwords.
 
 # 0.2.0
 
