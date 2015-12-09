@@ -11,7 +11,7 @@ EasyGoogle is installed by adding the following dependency to your
 `build.gradle` file:
 
     dependencies {
-      compile 'pub.devrel:easygoogle:0.1+'
+      compile 'pub.devrel:easygoogle:0.2+'
     }
 
 ## Usage
@@ -73,7 +73,7 @@ implement the `SignIn.SignInListener` interface:
    }
 
    @Override
-   public void onSignedIn(Person person) {
+   public void onSignedIn(GoogleSignInAccount account) {
        // Sign in was successful.
    }
 
@@ -92,7 +92,7 @@ implement the `SignIn.SignInListener` interface:
  ```
 
 Then, use the `SignIn` object from `mGoogle.getSignIn()` to access API methods
-like `SignIn#signIn` and `SignIn#signOut`.
+like `SignIn#getCurrentUser()`, `SignIn#signIn`, and `SignIn#signOut`.
 
 ### Cloud Messaging
 To enable Cloud Messaging, you will have to implement a simple `Service` in your application.

@@ -23,7 +23,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.google.android.gms.plus.model.people.Person;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 
 import pub.devrel.easygoogle.Google;
 import pub.devrel.easygoogle.gac.AppInvites;
@@ -68,8 +68,10 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onSignedIn(Person person) {
-        ((TextView) findViewById(R.id.sign_in_status)).setText("Signed in as: " + person.getDisplayName());
+    public void onSignedIn(GoogleSignInAccount account) {
+        Log.d(TAG, "onSignedIn:" + account.getEmail());
+        ((TextView) findViewById(R.id.sign_in_status)).setText(
+                "Signed in as: " + account.getDisplayName() + " (" + account.getEmail() + ")");
     }
 
     @Override

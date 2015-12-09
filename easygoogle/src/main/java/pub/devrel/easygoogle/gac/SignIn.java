@@ -15,23 +15,26 @@
  */
 package pub.devrel.easygoogle.gac;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.Api;
+import com.google.android.gms.common.api.OptionalPendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.common.api.Status;
-import com.google.android.gms.plus.Plus;
-import com.google.android.gms.plus.model.people.Person;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -50,9 +53,9 @@ public class SignIn extends GacModule {
 
         /**
          * The user has been signed successfully.
-         * @param person basic information abou the signed-in user like name and email.
+         * @param account basic information about the signed-in user like name and email.
          */
-        void onSignedIn(Person person);
+        void onSignedIn(GoogleSignInAccount account);
 
         /**
          * The sign in process failed, either due to user cancellation or unresolvable errors. The
@@ -78,32 +81,49 @@ public class SignIn extends GacModule {
 
     @Override
     public List<Api> getApis() {
-        return Arrays.asList(new Api[]{Plus.API});
+        return Arrays.asList(new Api[]{Auth.GOOGLE_SIGN_IN_API});
+    }
+
+    @Override
+    public Api.ApiOptions.HasOptions getOptionsFor(Api<? extends Api.ApiOptions> api) {
+        if (Auth.GOOGLE_SIGN_IN_API.equals(api)) {
+            return new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                    .requestEmail()
+                    .build();
+        } else {
+            return super.getOptionsFor(api);
+        }
     }
 
     @Override
     public List<Scope> getScopes() {
-        return Arrays.asList(new Scope("profile"), new Scope("email"));
+        return Collections.emptyList();
     }
 
     @Override
-    public void onConnected() {
-        Person currentPerson = Plus.PeopleApi.getCurrentPerson(getFragment().getGoogleApiClient());
-        mSignInListener.onSignedIn(currentPerson);
-    }
+    public void onConnected() {}
 
     @Override
-    public void onResolvableFailure(ConnectionResult connectionResult) {
-        mSignInListener.onSignInFailed();
-    }
+    public void onResolvableFailure(ConnectionResult connectionResult) {}
 
     @Override
-    public void onUnresolvableFailure() {
-        mSignInListener.onSignInFailed();
-    }
+    public void onUnresolvableFailure() {}
 
     @Override
-    public void onStart() {}
+    public void onStart() {
+        // Kick off silent sign-in process
+        Auth.GoogleSignInApi.silentSignIn(getFragment().getGoogleApiClient())
+                .setResultCallback(new ResultCallback<GoogleSignInResult>() {
+                    @Override
+                    public void onResult(GoogleSignInResult googleSignInResult) {
+                        if (googleSignInResult.isSuccess()) {
+                            mSignInListener.onSignedIn(googleSignInResult.getSignInAccount());
+                        } else {
+                            mSignInListener.onSignInFailed();
+                        }
+                    }
+                });
+    }
 
     @Override
     public void onStop() {}
@@ -111,11 +131,15 @@ public class SignIn extends GacModule {
     @Override
     public boolean handleActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == RC_SIGN_IN) {
-            if (resultCode != Activity.RESULT_OK) {
-                getFragment().setShouldResolve(false);
+            if (data != null) {
+                GoogleSignInResult gsr = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+                if (gsr != null && gsr.isSuccess()) {
+                    mSignInListener.onSignedIn(gsr.getSignInAccount());
+                } else {
+                    mSignInListener.onSignInFailed();
+                }
             }
 
-            getFragment().getGoogleApiClient().connect();
             return true;
         }
 
@@ -150,15 +174,28 @@ public class SignIn extends GacModule {
     }
 
     /**
+     * Get the currently signed in user as a GoogleSignInAccount.
+     * @return a {@link GoogleSignInAccount} or null.
+     */
+    public GoogleSignInAccount getCurrentUser() {
+        OptionalPendingResult<GoogleSignInResult> opr = Auth.GoogleSignInApi.silentSignIn(
+                getFragment().getGoogleApiClient());
+        if (opr.isDone()) {
+            return opr.get().getSignInAccount();
+        } else {
+            return null;
+        }
+    }
+
+    /**
      * Initiate the sign in process, resolving all possible errors (showing account picker, consent
      * screen, etc). This operation may result in UI being displayed, results are returned to
      * the {@link pub.devrel.easygoogle.gac.SignIn.SignInListener}.
      */
     public void signIn() {
         Log.d(TAG, "signIn");
-        getFragment().setShouldResolve(true);
-        getFragment().setResolutionCode(RC_SIGN_IN);
-        getFragment().getGoogleApiClient().reconnect();
+        Intent intent = Auth.GoogleSignInApi.getSignInIntent(getFragment().getGoogleApiClient());
+        getFragment().startActivityForResult(intent, RC_SIGN_IN);
     }
 
 
@@ -174,8 +211,8 @@ public class SignIn extends GacModule {
             Log.w(TAG, "Can't sign out, not signed in!");
             return;
         }
-        Plus.AccountApi.clearDefaultAccount(fragment.getGoogleApiClient());
-        Plus.AccountApi.revokeAccessAndDisconnect(fragment.getGoogleApiClient()).setResultCallback(
+
+        Auth.GoogleSignInApi.revokeAccess(fragment.getGoogleApiClient()).setResultCallback(
                 new ResultCallback<Status>() {
                     @Override
                     public void onResult(Status status) {

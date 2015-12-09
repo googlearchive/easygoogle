@@ -46,6 +46,10 @@ public abstract class GacModule {
 
     public abstract List<Api> getApis();
 
+    public Api.ApiOptions.HasOptions getOptionsFor(Api<? extends Api.ApiOptions> api) {
+        return null;
+    }
+
     public abstract List<Scope> getScopes();
 
     public abstract void onConnected();

@@ -69,7 +69,13 @@ public class GacFragment extends Fragment implements
 
         for (GacModule api : mModules.values()) {
             for (Api apiObj : api.getApis()) {
-                builder.addApi(apiObj);
+                // Add Api with options, if possible
+                Api.ApiOptions.HasOptions options = api.getOptionsFor(apiObj);
+                if (options != null) {
+                    builder.addApi(apiObj, options);
+                } else {
+                    builder.addApi(apiObj);
+                }
             }
 
             for (Scope scopeObj : api.getScopes()) {
