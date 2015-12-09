@@ -21,13 +21,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.TextView;
 
+import com.google.android.gms.auth.api.credentials.Credential;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 
 import pub.devrel.easygoogle.Google;
 import pub.devrel.easygoogle.gac.AppInvites;
 import pub.devrel.easygoogle.gac.SignIn;
+import pub.devrel.easygoogle.gac.SmartLock;
 import pub.devrel.easygoogle.gcm.Messaging;
 
 /**
@@ -38,11 +41,17 @@ public class MainActivity extends AppCompatActivity implements
         SignIn.SignInListener,
         Messaging.MessagingListener,
         AppInvites.AppInviteListener,
+        SmartLock.SmartLockListener,
         View.OnClickListener {
 
     public static String TAG = "sample.MainActivity";
 
     private Google mGoogle;
+
+    // SmartLock data/fields
+    private Credential mCredential;
+    private EditText mUsernameField;
+    private EditText mPasswordField;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,15 +65,23 @@ public class MainActivity extends AppCompatActivity implements
                 .enableMessaging(this, getString(R.string.gcm_defaultSenderId))
                 .enableSignIn(this)
                 .enableAppInvites(this)
+                .enableSmartLock(this)
                 .build();
 
         // Inject sign-in button, automatically configured to initiate sign-in when clicked.
         mGoogle.getSignIn().createSignInButton(this, (ViewGroup) findViewById(R.id.layout_sign_in));
 
-        // Click listeners for sign-out and message buttons
+        // Click listeners for buttons
         findViewById(R.id.send_message_button).setOnClickListener(this);
         findViewById(R.id.sign_out_button).setOnClickListener(this);
         findViewById(R.id.send_invites_button).setOnClickListener(this);
+        findViewById(R.id.button_smartlock_load).setOnClickListener(this);
+        findViewById(R.id.button_smartlock_save).setOnClickListener(this);
+        findViewById(R.id.button_smartlock_delete).setOnClickListener(this);
+
+        // Other views
+        mUsernameField = ((EditText) findViewById(R.id.field_smartlock_username));
+        mPasswordField = ((EditText) findViewById(R.id.field_smartlock_password));
     }
 
     @Override
@@ -108,6 +125,27 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
+    public void onCredentialRetrieved(Credential credential) {
+        ((TextView) findViewById(R.id.smartlock_status)).setText("Credential retrieved.");
+        mCredential = credential;
+        mUsernameField.setText(credential.getId());
+        mPasswordField.setText(credential.getPassword());
+    }
+
+    @Override
+    public void onShouldShowCredentialPicker() {
+        Log.d(TAG, "onShouldShowCredentialPicker");
+        mGoogle.getSmartLock().showCredentialPicker();
+    }
+
+    @Override
+    public void onCredentialRetrievalFailed() {
+        ((TextView) findViewById(R.id.smartlock_status)).setText("Credential retrieval failed.");
+        mUsernameField.setText(null);
+        mPasswordField.setText(null);
+    }
+
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.sign_out_button:
@@ -124,6 +162,31 @@ public class MainActivity extends AppCompatActivity implements
                 // Send App Invites
                 mGoogle.getAppInvites().sendInvitation(
                         "Title", "Message", Uri.parse("http://example.com/id/12345"));
+                break;
+            case R.id.button_smartlock_load:
+                // Begin loading Credentials
+                mGoogle.getSmartLock().getCredentials();
+                break;
+            case R.id.button_smartlock_save:
+                // Save Credential
+                String id = mUsernameField.getText().toString();
+                String password = mPasswordField.getText().toString();
+                mGoogle.getSmartLock().save(id, password);
+
+                ((TextView) findViewById(R.id.smartlock_status)).setText(null);
+                mUsernameField.setText(null);
+                mPasswordField.setText(null);
+                break;
+            case R.id.button_smartlock_delete:
+                // Delete Credential and clear fields
+                if (mCredential != null) {
+                    mGoogle.getSmartLock().delete(mCredential);
+
+                    mCredential = null;
+                    ((TextView) findViewById(R.id.smartlock_status)).setText(null);
+                    mUsernameField.setText(null);
+                    mPasswordField.setText(null);
+                }
                 break;
         }
     }

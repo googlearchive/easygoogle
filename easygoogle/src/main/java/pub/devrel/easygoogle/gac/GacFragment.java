@@ -234,7 +234,7 @@ public class GacFragment extends Fragment implements
      * @param requestCode the original request code to mask.
      * @return the masked request code to use instead.
      */
-    private int maskRequestCode(int requestCode) {
+    protected int maskRequestCode(int requestCode) {
         if ((requestCode & 0xffff0000) != 0) {
             throw new IllegalArgumentException("Can only use lower 16 bits for requestCode");
         }
@@ -304,5 +304,15 @@ public class GacFragment extends Fragment implements
         AppInvites appInvites = new AppInvites(this);
         appInvites.setListener(appInviteListener);
         mModules.put(AppInvites.class, appInvites);
+    }
+
+    /**
+     * Enable the {@link SmartLock} module.
+     * @param smartLockListener the listener to receive SmartLock events.
+     */
+    public void enableSmartLock(SmartLock.SmartLockListener smartLockListener) {
+        SmartLock smartLock = new SmartLock(this);
+        smartLock.setListener(smartLockListener);
+        mModules.put(SmartLock.class, smartLock);
     }
 }

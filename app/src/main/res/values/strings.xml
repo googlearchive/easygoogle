@@ -13,4 +13,10 @@
 
     <!-- GCM permission string, this needs to be unique for every app -->
     <string name="gcm_permission">pub.devrel.easygoogle.sampleapp.GCM</string>
+    <string name="title_smart_lock">SmartLock for Passwords</string>
+    <string name="smartlock_load">Load</string>
+    <string name="smartlock_save">Save</string>
+    <string name="smartlock_delete">Delete</string>
+    <string name="hint_username">username</string>
+    <string name="hint_password">password</string>
 </resources>

@@ -25,7 +25,6 @@ import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
-import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.Api;
 import com.google.android.gms.common.api.OptionalPendingResult;
@@ -101,16 +100,9 @@ public class SignIn extends GacModule {
     }
 
     @Override
-    public void onConnected() {}
-
-    @Override
-    public void onResolvableFailure(ConnectionResult connectionResult) {}
-
-    @Override
-    public void onUnresolvableFailure() {}
-
-    @Override
     public void onStart() {
+        super.onStart();
+
         // Kick off silent sign-in process
         Auth.GoogleSignInApi.silentSignIn(getFragment().getGoogleApiClient())
                 .setResultCallback(new ResultCallback<GoogleSignInResult>() {

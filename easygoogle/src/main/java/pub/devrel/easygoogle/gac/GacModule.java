@@ -46,19 +46,19 @@ public abstract class GacModule {
 
     public abstract List<Api> getApis();
 
+    public abstract List<Scope> getScopes();
+
     public Api.ApiOptions.HasOptions getOptionsFor(Api<? extends Api.ApiOptions> api) {
         return null;
     }
 
-    public abstract List<Scope> getScopes();
+    public void onConnected() {}
 
-    public abstract void onConnected();
+    public void onResolvableFailure(ConnectionResult connectionResult) {}
 
-    public abstract void onResolvableFailure(ConnectionResult connectionResult);
+    public void onUnresolvableFailure() {}
 
-    public abstract void onUnresolvableFailure();
+    public void onStart() {}
 
-    public abstract void onStart();
-
-    public abstract void onStop();
+    public void onStop() {}
 }

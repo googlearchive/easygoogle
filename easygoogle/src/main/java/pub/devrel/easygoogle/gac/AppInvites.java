@@ -27,7 +27,6 @@ import android.util.Log;
 import com.google.android.gms.appinvite.AppInvite;
 import com.google.android.gms.appinvite.AppInviteInvitation;
 import com.google.android.gms.appinvite.AppInviteReferral;
-import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.Api;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Scope;
@@ -147,6 +146,8 @@ public class AppInvites extends GacModule {
 
     @Override
     public void onStart() {
+        super.onStart();
+
         // If app is already installed app and launched with deep link that matches
         // DeepLinkActivity filter, then the referral info will be in the intent.
         Intent launchIntent = getFragment().getActivity().getIntent();
@@ -163,6 +164,8 @@ public class AppInvites extends GacModule {
 
     @Override
     public void onStop() {
+        super.onStop();
+
         if (mDeepLinkReceiver != null) {
             // Unregister the local BroadcastReceiver
             LocalBroadcastManager.getInstance(getFragment().getActivity()).unregisterReceiver(
@@ -199,18 +202,14 @@ public class AppInvites extends GacModule {
 
     @Override
     public void onConnected() {
+        super.onConnected();
+
         // If there is an invitation waiting to be updated, do it now
         if (mCachedInvitationIntent != null) {
             updateInvitationStatus(mCachedInvitationIntent);
             mCachedInvitationIntent = null;
         }
     }
-
-    @Override
-    public void onResolvableFailure(ConnectionResult connectionResult) {}
-
-    @Override
-    public void onUnresolvableFailure() {}
 
     public void setListener(AppInviteListener listener) {
         mListener = listener;

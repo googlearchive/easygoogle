@@ -1,3 +1,7 @@
+# 0.2.1
+
+  * Added new module for SmartLock for Passwords
+
 # 0.2.0
 
   * Upgraded to Google Play Services version 8.3.0.
