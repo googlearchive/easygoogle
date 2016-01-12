@@ -12,7 +12,7 @@ EasyGoogle is installed by adding the following dependency to your
 `build.gradle` file:
 
     dependencies {
-      compile 'pub.devrel:easygoogle:0.2.1+'
+      compile 'pub.devrel:easygoogle:0.2.2+'
     }
 
 ## Usage
@@ -102,6 +102,15 @@ First, pick a unique permission name and make the following string resource in y
 
 ```xml
 <string name="gcm_permission">your.unique.gcm.permission.name.here</string>
+```
+
+Next, add the following permission to your `AndroidManifest.xml` file before the `application` tag,
+replacing `<your-package-name>` with your Android package name:
+
+```xml
+    <permission android:name="<your-package-name>.permission.C2D_MESSAGE"
+                android:protectionLevel="signature" />
+    <uses-permission android:name="<your-package-name>.permission.C2D_MESSAGE" />
 ```
 
 Next, add the following to your `AndroidManifest.xml` inside the `application` tag:
