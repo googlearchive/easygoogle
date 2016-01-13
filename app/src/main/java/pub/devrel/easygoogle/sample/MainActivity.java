@@ -85,6 +85,14 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+
+        // Subscribe to the "easygoogle" topic
+        mGoogle.getMessaging().subscribeTo("/topics/easygoogle");
+    }
+
+    @Override
     public void onSignedIn(GoogleSignInAccount account) {
         Log.d(TAG, "onSignedIn:" + account.getEmail());
         ((TextView) findViewById(R.id.sign_in_status)).setText(

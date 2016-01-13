@@ -52,6 +52,24 @@ public class Messaging {
         mFragment.send(bundle);
     }
 
+    /**
+     * Subscribe to a GCM topic.
+     * @see com.google.android.gms.gcm.GcmPubSub#subscribe(String, String, Bundle)
+     * @param topic topic to subscribe to.
+     */
+    public void subscribeTo(String topic) {
+        mFragment.subscribeTo(topic);
+    }
+
+    /**
+     * Unsubscribe from a GCM topic.
+     * @see com.google.android.gms.gcm.GcmPubSub#unsubscribe(String, String)
+     * @param topic topic to unsubscribe from.
+     */
+    public void unsubscribeFrom(String topic) {
+        mFragment.unsubscribeFrom(topic);
+    }
+
     // TODO(afshar): remove or use unused methods
     public void setSenderId(String senderId) {
         mFragment.setSenderId(senderId);
