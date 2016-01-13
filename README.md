@@ -98,11 +98,25 @@ like `SignIn#getCurrentUser()`, `SignIn#signIn`, and `SignIn#signOut`.
 ### Cloud Messaging
 To enable Cloud Messaging, you will have to implement a simple `Service` in your application.
 
-First, pick a unique permission name and make the following string resource in your `strings.xml` file. It is important to pick a unique name:
+First, pick a unique permission name and make the following string resource in your `strings.xml` file. 
+It is important to pick a unique name:
 
 ```xml
 <string name="gcm_permission">your.unique.gcm.permission.name.here</string>
 ```
+
+Next, add the following to your `AndroidManifest.xml` inside the `application` tag, making sure
+that the value of the `android:permission` element is the same value you specified in your
+`strings.xml` file above:
+
+```xml
+ <!-- This allows the app to receive GCM through EasyGoogle -->
+ <service
+     android:name=".MessagingService"
+     android:enabled="true"
+     android:exported="false"
+     android:permission="your.unique.gcm.permission.name.here" />
+ ```
 
 Next, add the following permission to your `AndroidManifest.xml` file before the `application` tag,
 replacing `<your-package-name>` with your Android package name:
@@ -112,17 +126,6 @@ replacing `<your-package-name>` with your Android package name:
                 android:protectionLevel="signature" />
     <uses-permission android:name="<your-package-name>.permission.C2D_MESSAGE" />
 ```
-
-Next, add the following to your `AndroidManifest.xml` inside the `application` tag:
-
-```xml
- <!-- This allows the app to receive GCM through EasyGoogle -->
- <service
-     android:name=".MessagingService"
-     android:enabled="true"
-     android:exported="false"
-     android:permission="@string/gcm_permission" />
- ```
 
 Then implement a class called `MessagingService` that extends `EasyMessageService`. Below is
 one example of such a class:
