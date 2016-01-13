@@ -4,4 +4,6 @@
     <string name="action_deep_link">pub.devrel.easygoogle.DEEP_LINK_ACTION</string>
     <string name="action_new_token">pub.devrel.easygoogle.NEW_TOKEN_ACTION</string>
     <string name="action_new_message">pub.devrel.easygoogle.NEW_MESSAGE_ACTION</string>
+    <string name="action_subscribe">pub.devrel.easygoogle.SUBSCRIBE_ACTION</string>
+    <string name="action_unsubscribe">pub.devrel.easygoogle.UNSUBSCRIBE_ACTION</string>
 </resources>

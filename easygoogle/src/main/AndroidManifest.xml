@@ -58,5 +58,9 @@
             android:name=".gcm.MessageSenderService"
             android:exported="false" />
 
+        <service
+            android:name=".gcm.PubSubService"
+            android:exported="false" />
+
     </application>
 </manifest>

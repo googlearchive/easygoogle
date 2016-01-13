@@ -12,7 +12,7 @@ EasyGoogle is installed by adding the following dependency to your
 `build.gradle` file:
 
     dependencies {
-      compile 'pub.devrel:easygoogle:0.2.2+'
+      compile 'pub.devrel:easygoogle:0.2.3+'
     }
 
 ## Usage

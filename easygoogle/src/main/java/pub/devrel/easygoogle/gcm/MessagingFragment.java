@@ -25,6 +25,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
+import pub.devrel.easygoogle.R;
+
 /**
  * Fragment to manage communication with the various GCM services and deliver messages and
  * other events to the host activity automatically.
@@ -37,6 +39,7 @@ public class MessagingFragment extends Fragment {
     public static final String MESSAGE_RECEIVED = "MESSAGE_RECEIVED";
     public static final String MESSAGE_FROM_FIELD = "MESSAGE_FROM";
     public static final String MESSAGE_ARG = "MESSAGE_ARG";
+    public static final String TOPIC_ARG = "TOPIC_ARG";
 
     public static final String GCM_PERMISSION_RES_NAME = "gcm_permission";
 
@@ -161,6 +164,22 @@ public class MessagingFragment extends Fragment {
 
     public void send(Bundle data) {
         send(getActivity(), mSenderId, data);
+    }
+
+    public void subscribeTo(String topic) {
+        Intent intent = new Intent(getActivity(), PubSubService.class);
+        intent.setAction(getString(R.string.action_subscribe));
+        intent.putExtra(SENDER_ID_ARG, mSenderId);
+        intent.putExtra(TOPIC_ARG, topic);
+        getActivity().startService(intent);
+    }
+
+    public void unsubscribeFrom(String topic) {
+        Intent intent = new Intent(getActivity(), PubSubService.class);
+        intent.setAction(getString(R.string.action_unsubscribe));
+        intent.putExtra(SENDER_ID_ARG, mSenderId);
+        intent.putExtra(TOPIC_ARG, topic);
+        getActivity().startService(intent);
     }
 
     private void onMessageReceived(String from, Bundle data) {
