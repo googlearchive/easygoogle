@@ -302,5 +302,11 @@ public class GacFragment extends Fragment implements
         } catch (IllegalAccessException e) {
             Log.e(TAG, "enableModule:IllegalAccessExeption", e);
         }
+
+        // Re-build GoogleApiClient, if necessary
+        if (getActivity() != null) {
+            Log.d(TAG, "enableModule: rebuilding GoogleApiClient");
+            buildGoogleApiClient();
+        }
     }
 }

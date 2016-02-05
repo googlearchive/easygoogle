@@ -176,6 +176,14 @@ public class SignIn extends GacModule<SignIn.SignInListener> {
     }
 
     /**
+     * Convenience method to determine if a user is signed in (current user is not null).
+     * @return true if signed in, false otherwise.
+     */
+    public boolean isSignedIn() {
+        return (getCurrentUser() != null);
+    }
+
+    /**
      * Initiate the sign in process, resolving all possible errors (showing account picker, consent
      * screen, etc). This operation may result in UI being displayed, results are returned to
      * the {@link pub.devrel.easygoogle.gac.SignIn.SignInListener}.
