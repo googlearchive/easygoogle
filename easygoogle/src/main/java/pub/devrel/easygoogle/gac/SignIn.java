@@ -40,12 +40,12 @@ import java.util.List;
  * Interface to the Google Sign In API, which can be used to determine the users identity. The
  * default scopes "profile" and "email" are used to return basic information about the user
  * (when possible) however this does not grant any authorization to use other Google APIs on
- * behalf of the user.  For more information visit:
+ * behalf of the user. For more information visit:
  * https://developers.google.com/identity/sign-in/android/
  *
  * When registering OAuth clients for Google Sign-In, Web server OAuth client registration is needed
  * with android by requesting an ID token in your GoogleSignInOptions, and supplying the web client
- * ID for your server.  For more information visit:
+ * ID for your server. For more information visit:
  * http://android-developers.blogspot.sg/2016/03/registering-oauth-clients-for-google.html
  */
 public class SignIn extends GacModule<SignIn.SignInListener> {
