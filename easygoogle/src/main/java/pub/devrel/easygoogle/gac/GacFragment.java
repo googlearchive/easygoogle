@@ -47,6 +47,8 @@ public class GacFragment extends Fragment implements
     private static final String KEY_IS_RESOLVING = "is_resolving";
     private static final String KEY_SHOULD_RESOLVE = "should_resolve";
 
+    private String mServerClientId;
+
     private GoogleApiClient mGoogleApiClient;
     private Map<Class<? extends GacModule>, GacModule> mModules = new HashMap<>();
 
@@ -274,6 +276,14 @@ public class GacFragment extends Fragment implements
      */
     public void setResolutionCode(int resolutionCode) {
         mResolutionCode = resolutionCode;
+    }
+
+    public void setServerClientId(String serverClientId) {
+        mServerClientId = serverClientId;
+    }
+
+    public String getServerClientId(){
+        return mServerClientId;
     }
 
     public GoogleApiClient getGoogleApiClient() {

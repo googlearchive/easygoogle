@@ -40,8 +40,13 @@ import java.util.List;
  * Interface to the Google Sign In API, which can be used to determine the users identity. The
  * default scopes "profile" and "email" are used to return basic information about the user
  * (when possible) however this does not grant any authorization to use other Google APIs on
- * behalf of the user. For more information visit:
+ * behalf of the user.  For more information visit:
  * https://developers.google.com/identity/sign-in/android/
+ *
+ * When registering OAuth clients for Google Sign-In, Web server OAuth client registration is needed
+ * with android by requesting an ID token in your GoogleSignInOptions, and supplying the web client
+ * ID for your server.  For more information visit:
+ * http://android-developers.blogspot.sg/2016/03/registering-oauth-clients-for-google.html
  */
 public class SignIn extends GacModule<SignIn.SignInListener> {
 
@@ -82,9 +87,16 @@ public class SignIn extends GacModule<SignIn.SignInListener> {
     @Override
     public Api.ApiOptions.HasOptions getOptionsFor(Api<? extends Api.ApiOptions> api) {
         if (Auth.GOOGLE_SIGN_IN_API.equals(api)) {
-            return new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                    .requestEmail()
-                    .build();
+            GoogleSignInOptions.Builder googleSignInOptions =  new GoogleSignInOptions.Builder(
+                    GoogleSignInOptions.DEFAULT_SIGN_IN)
+                    .requestEmail();
+
+            // Check server client id for OAuth, so GoogleSignInAccount.getIdToken(); is non-null
+            String serverClientId = getFragment().getServerClientId();
+            if(serverClientId != null){
+                googleSignInOptions.requestIdToken(serverClientId);
+            }
+            return googleSignInOptions.build();
         } else {
             return super.getOptionsFor(api);
         }

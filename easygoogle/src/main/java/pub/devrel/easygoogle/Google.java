@@ -49,6 +49,7 @@ public class Google {
         private FragmentActivity mActivity;
 
         private SignIn.SignInListener mSignInListener;
+        private String mServerClientId;
 
         private Messaging.MessagingListener mMessagingListener;
         private String mSenderId;
@@ -67,6 +68,18 @@ public class Google {
          * @return self, for chaining.
          */
         public Builder enableSignIn(SignIn.SignInListener signInListener) {
+            mSignInListener = signInListener;
+            return this;
+        }
+
+        /**
+         * Initialize {@link SignIn}.
+         * @param signInListener listener for sign in events.
+         * @param serverClientId client id for backend OAuth.
+         * @return self, for chaining.
+         */
+        public Builder enableSignIn(SignIn.SignInListener signInListener, String serverClientId) {
+            mServerClientId = serverClientId;
             mSignInListener = signInListener;
             return this;
         }
@@ -110,6 +123,9 @@ public class Google {
         public Google build() {
             Google google = new Google(mActivity);
             if (mSignInListener != null) {
+                if(mServerClientId != null) {
+                    google.mGacFragment.setServerClientId(mServerClientId);
+                }
                 google.mGacFragment.enableModule(SignIn.class, mSignInListener);
             }
 
