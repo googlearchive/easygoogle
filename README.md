@@ -12,7 +12,7 @@ EasyGoogle is installed by adding the following dependency to your
 `build.gradle` file:
 
     dependencies {
-      compile 'pub.devrel:easygoogle:0.2.4+'
+      compile 'pub.devrel:easygoogle:0.2.5+'
     }
 
 ## Usage
@@ -68,8 +68,11 @@ implement the `SignIn.SignInListener` interface:
      super.onCreate(savedInstanceState);
      setContentView(R.layout.activity_main);
 
+     // This is optional, pass 'null' if no ID token is required.
+     String serverClientId = getString(R.string.default_web_client_id);
+
      mGoogle = new Google.Builder(this)
-       .enableSignIn(this)
+       .enableSignIn(this, serverClientId)
        .build();
    }
 
@@ -98,7 +101,7 @@ like `SignIn#getCurrentUser()`, `SignIn#signIn`, and `SignIn#signOut`.
 ### Cloud Messaging
 To enable Cloud Messaging, you will have to implement a simple `Service` in your application.
 
-First, pick a unique permission name and make the following string resource in your `strings.xml` file. 
+First, pick a unique permission name and make the following string resource in your `strings.xml` file.
 It is important to pick a unique name:
 
 ```xml

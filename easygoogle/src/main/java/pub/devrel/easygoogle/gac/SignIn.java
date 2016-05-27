@@ -46,7 +46,7 @@ import java.util.List;
  * When registering OAuth clients for Google Sign-In, Web server OAuth client registration is needed
  * with android by requesting an ID token in your GoogleSignInOptions, and supplying the web client
  * ID for your server. For more information visit:
- * http://android-developers.blogspot.sg/2016/03/registering-oauth-clients-for-google.html
+ * https://android-developers.blogspot.com/2016/03/registering-oauth-clients-for-google.html
  */
 public class SignIn extends GacModule<SignIn.SignInListener> {
 

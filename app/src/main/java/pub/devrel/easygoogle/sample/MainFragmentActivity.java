@@ -63,7 +63,7 @@ public class MainFragmentActivity extends AppCompatActivity implements
             Log.d(TAG, "onActivityCreated");
 
             mGoogle = new Google.Builder(getActivity())
-                    .enableSignIn(this)
+                    .enableSignIn(this, null)
                     .build();
 
             Log.d(TAG, "onActivityCreated:isSignedIn:" + isSignedIn());

@@ -75,7 +75,7 @@ public class Google {
         /**
          * Initialize {@link SignIn}.
          * @param signInListener listener for sign in events.
-         * @param serverClientId client id for backend OAuth.
+         * @param serverClientId (optional) web client ID for obtaining ID tokens.
          * @return self, for chaining.
          */
         public Builder enableSignIn(SignIn.SignInListener signInListener, String serverClientId) {

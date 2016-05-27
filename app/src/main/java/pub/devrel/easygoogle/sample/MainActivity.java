@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity implements
         // are returned through API-specific listener classes like {@link SignIn.SignInListener}.
         mGoogle = new Google.Builder(this)
                 .enableMessaging(this, getString(R.string.gcm_defaultSenderId))
-                .enableSignIn(this)
+                .enableSignIn(this, null)
                 .enableAppInvites(this)
                 .enableSmartLock(this)
                 .build();
