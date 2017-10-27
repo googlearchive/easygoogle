@@ -1,4 +1,18 @@
 # EasyGoogle
+
+## Project status
+![status: inactive](https://img.shields.io/badge/status-inactive-red.svg)
+
+This project is no longer actively maintained, and remains here as an archive of this work.
+
+EasyGoogle was created as an experimental improvement to the developer experience for certain
+Google APIs. In the time since its creation, most of these APIs have improved (and many in ways
+that resemble EasyGoogle). For this reason it no longer makes sense to maintain this library.
+Thank you to everyone who submitted issues or gave feedback, your thoughts influenced API
+development at Google.
+
+## Introduction
+
 EasyGoogle is a wrapper library to simplify basic integrations with Google Play
 Services.  The library wraps the following APIs (for now):
 
